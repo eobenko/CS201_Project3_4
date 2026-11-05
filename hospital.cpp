@@ -1,4 +1,5 @@
 #include <queue>
+#include "bTree.h"
 #include "patient.cpp" //Will change to patient.h
 #include "doctor.cpp" //Will change to doctor.h
 
