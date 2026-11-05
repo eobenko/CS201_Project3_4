@@ -1,0 +1,10 @@
+For updating everything:
+git add .
+git commit -m "Updated project"
+git push
+
+
+For updating only one file:
+git add nameFile.cpp
+git commit -m "Updated nameFile"
+git push
