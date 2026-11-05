@@ -1,9 +1,10 @@
 #include "person.h"
 using namespace std::chrono;
-// Doctor: name, age, date of birth, skill, shift start, shift end.
 class Doctor : public Person
 {
 private:
+    const int MIN_SKILL = 1;
+    const int MAX_SKILL = 10;
     int skill;
     hours shift_start;
     hours shift_end;
@@ -15,13 +16,13 @@ public:
         shift_start = start;
         shift_end = end;
 
-        if (skill > 10)
+        if (skill > MAX_SKILL)
         {
-            skill = 10;
+            skill = MAX_SKILL;
         }
-        else if (skill < 0)
+        else if (skill < MIN_SKILL)
         {
-            skill = 0;
+            skill = MIN_SKILL;
         }
     }
 
@@ -31,13 +32,13 @@ public:
         shift_start = hours(start);
         shift_end = hours(end);
 
-        if (skill > 10)
+        if (skill > MAX_SKILL)
         {
-            skill = 10;
+            skill = MAX_SKILL;
         }
-        else if (skill < 0)
+        else if (skill < MIN_SKILL)
         {
-            skill = 0;
+            skill = MIN_SKILL;
         }
     }
 
