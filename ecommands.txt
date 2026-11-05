@@ -1,3 +1,7 @@
+At the start of every coding session:
+git pull
+
+
 For updating everything:
 git add .
 git commit -m "Updated project"
