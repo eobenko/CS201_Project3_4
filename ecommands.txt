@@ -8,3 +8,9 @@ For updating only one file:
 git add nameFile.cpp
 git commit -m "Updated nameFile"
 git push
+
+
+For updating only specific files:
+git add nameFile1.cpp nameFile2.cpp nameFile3.cpp
+git commit -m "Updated nameFile"
+git push
