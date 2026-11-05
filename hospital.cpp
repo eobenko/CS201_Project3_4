@@ -5,8 +5,8 @@
 class Hospital {
 protected:
     std::priority_queue<Patient&> patientQueue;
-    //BTree<Patient, /*B-value*/> patients;
-    //BTree<Doctor, /*B-value*/> doctors;
+    //BTree<Person, /*B-value*/> patients;
+    //BTree<Person, /*B-value*/> doctors;
 public:
     void push(Patient& p) {
         patientQueue.push(p);

@@ -26,4 +26,23 @@ public:
             age -= std::chrono::years(1);
         return age;
     }
+
+    bool operator==(const Person& rhs) {
+        return dob == rhs.dob;
+    }
+    bool operator!=(const Person& rhs) {
+        return dob != rhs.dob;
+    }
+    bool operator<(const Person& rhs) {
+        return dob < rhs.dob;
+    }
+    bool operator>(const Person& rhs) {
+        return dob > rhs.dob;
+    }
+    bool operator<=(const Person& rhs) {
+        return dob <= rhs.dob;
+    }
+    bool operator>=(const Person& rhs) {
+        return dob >= rhs.dob;
+    }
 };
