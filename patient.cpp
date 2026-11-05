@@ -1,47 +1,41 @@
-#include "person.h"
+#include "patient.h"
 
-class Patient : public Person
+int Patient::getCondition()
 {
-protected:
-    int condition;
+    return condition;
+}
 
-public:
-    int condition()
-    {
-        return condition;
-    }
-    int setCondition(int c)
-    {
-        if (c < 0)
-            condition = 0;
-        else if (c > 10)
-            condition = 10;
-        else
-            condition = c;
-    }
+int Patient::setCondition(int c)
+{
+    if (c < 0)
+        condition = 0;
+    else if (c > 10)
+        condition = 10;
+    else
+        condition = c;
+}
 
-    bool operator==(const Patient &rhs)
-    {
-        return condition == rhs.condition;
-    }
-    bool operator!=(const Patient &rhs)
-    {
-        return condition != rhs.condition;
-    }
-    bool operator<(const Patient &rhs)
-    {
-        return condition < rhs.condition;
-    }
-    bool operator>(const Patient &rhs)
-    {
-        return condition > rhs.condition;
-    }
-    bool operator<=(const Patient &rhs)
-    {
-        return condition <= rhs.condition;
-    }
-    bool operator>=(const Patient &rhs)
-    {
-        return condition >= rhs.condition;
-    }
-};
+bool Patient::operator==(const Patient &rhs)
+{
+    return condition == rhs.condition;
+}
+bool Patient::operator!=(const Patient &rhs)
+{
+    return condition != rhs.condition;
+}
+bool Patient::operator<(const Patient &rhs)
+{
+    return condition < rhs.condition;
+}
+bool Patient::operator>(const Patient &rhs)
+{
+    return condition > rhs.condition;
+}
+bool Patient::operator<=(const Patient &rhs)
+{
+    return condition <= rhs.condition;
+}
+bool Patient::operator>=(const Patient &rhs)
+{
+    return condition >= rhs.condition;
+}
