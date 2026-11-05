@@ -1,34 +1,47 @@
 #include "person.h"
 
-class Patient : public Person {
+class Patient : public Person
+{
 protected:
-    int level;
+    int condition;
+
 public:
-    int level() {
-        return level;
+    int condition()
+    {
+        return condition;
     }
-    int setLevel(int l) {
-        if      (l < 0)     level = 0;
-        else if (l > 10)    level = 10;
-        else                level = l;
+    int setCondition(int c)
+    {
+        if (c < 0)
+            condition = 0;
+        else if (c > 10)
+            condition = 10;
+        else
+            condition = c;
     }
 
-    bool operator==(const Patient& rhs) {
-        return level == rhs.level;
+    bool operator==(const Patient &rhs)
+    {
+        return condition == rhs.condition;
     }
-    bool operator!=(const Patient& rhs) {
-        return level != rhs.level;
+    bool operator!=(const Patient &rhs)
+    {
+        return condition != rhs.condition;
     }
-    bool operator<(const Patient& rhs) {
-        return level < rhs.level;
+    bool operator<(const Patient &rhs)
+    {
+        return condition < rhs.condition;
     }
-    bool operator>(const Patient& rhs) {
-        return level > rhs.level;
+    bool operator>(const Patient &rhs)
+    {
+        return condition > rhs.condition;
     }
-    bool operator<=(const Patient& rhs) {
-        return level <= rhs.level;
+    bool operator<=(const Patient &rhs)
+    {
+        return condition <= rhs.condition;
     }
-    bool operator>=(const Patient& rhs) {
-        return level >= rhs.level;
+    bool operator>=(const Patient &rhs)
+    {
+        return condition >= rhs.condition;
     }
 };
