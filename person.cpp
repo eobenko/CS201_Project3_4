@@ -9,6 +9,10 @@ public:
         name = n;
         dob = std::chrono::year_month_day(y, m, d);
     }
+    Person(std::string n, int y, int m, int d) {
+        name = n;
+        dob = std::chrono::year_month_day(std::chrono::year(y), std::chrono::month(m), std::chrono::day(d));
+    }
     std::string name() {
         return name;
     }
