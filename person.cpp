@@ -1,61 +1,55 @@
 #include "person.h"
-using namespace std::chrono;
-class Person
+
+Person::Person(std::string n, std::chrono::year y, month m, day d)
 {
-protected:
-    std::string name;
-    year_month_day dob;
+    name = n;
+    dob = year_month_day(y, m, d);
+}
 
-public:
-    Person(std::string &n, year &y, month &m, day &d)
-    {
-        name = n;
-        dob = year_month_day(y, m, d);
-    }
-    Person(std::string &n, int y, int m, int d)
-    {
-        name = n;
-        dob = year_month_day(year(y), month(m), day(d));
-    }
-    std::string name()
-    {
-        return name;
-    }
-    year_month_day dob()
-    {
-        return dob;
-    }
-    years age()
-    {
-        year_month_day today(floor<days>(system_clock::now()));
-        years age = today.year() - dob.year();
-        if (month_day(today.month(), today.day()) < month_day(dob.month(), dob.day()))
-            age -= years(1);
-        return age;
-    }
+Person::Person(std::string n, int y, int m, int d)
+{
+    name = n;
+    dob = year_month_day(year(y), month(m), day(d));
+}
 
-    bool operator==(const Person &rhs)
-    {
-        return dob == rhs.dob;
-    }
-    bool operator!=(const Person &rhs)
-    {
-        return dob != rhs.dob;
-    }
-    bool operator<(const Person &rhs)
-    {
-        return dob < rhs.dob;
-    }
-    bool operator>(const Person &rhs)
-    {
-        return dob > rhs.dob;
-    }
-    bool operator<=(const Person &rhs)
-    {
-        return dob <= rhs.dob;
-    }
-    bool operator>=(const Person &rhs)
-    {
-        return dob >= rhs.dob;
-    }
-};
+std::string Person::getName()
+{
+    return name;
+}
+year_month_day Person::getDob()
+{
+    return dob;
+}
+years Person::getAge()
+{
+    year_month_day today(floor<days>(system_clock::now()));
+    years age = today.year() - dob.year();
+    if (month_day(today.month(), today.day()) < month_day(dob.month(), dob.day()))
+        age -= years(1);
+    return age;
+}
+
+bool Person::operator==(const Person &rhs)
+{
+    return dob == rhs.dob;
+}
+bool Person::operator!=(const Person &rhs)
+{
+    return dob != rhs.dob;
+}
+bool Person::operator<(const Person &rhs)
+{
+    return dob < rhs.dob;
+}
+bool Person::operator>(const Person &rhs)
+{
+    return dob > rhs.dob;
+}
+bool Person::operator<=(const Person &rhs)
+{
+    return dob <= rhs.dob;
+}
+bool Person::operator>=(const Person &rhs)
+{
+    return dob >= rhs.dob;
+}
