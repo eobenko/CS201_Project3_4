@@ -1,1 +1,2 @@
-https://1000randomnames.com/
+Startup patients/doctors: https://1000randomnames.com/
+B-Trees: https://www.geeksforgeeks.org/cpp/b-tree-implementation-in-cpp/
