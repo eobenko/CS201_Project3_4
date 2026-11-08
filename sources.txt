@@ -2,3 +2,7 @@ Startup patients/doctors: https://1000randomnames.com/
 B-Trees: https://www.geeksforgeeks.org/cpp/b-tree-implementation-in-cpp/
 Visuals: Lab 8
 New Json after issues with Visuals/SFML: https://code.visualstudio.com/docs/cpp/configure-intellisense
+SFML help: https://www.sfml-dev.org/tutorials/3.1/getting-started/build-from-source/
+SFML help: https://cmake.org/cmake/help/latest/variable/BUILD_SHARED_LIBS.html
+Coding shapes: https://www.sfml-dev.org/tutorials/3.1/
+
