@@ -1,1 +1,4 @@
-https://1000randomnames.com/
+Startup patients/doctors: https://1000randomnames.com/
+B-Trees: https://www.geeksforgeeks.org/cpp/b-tree-implementation-in-cpp/
+Visuals: Lab 8
+New Json after issues with Visuals/SFML: https://code.visualstudio.com/docs/cpp/configure-intellisense
