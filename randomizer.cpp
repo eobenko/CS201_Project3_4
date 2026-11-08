@@ -52,7 +52,7 @@ std::chrono::year_month_day getRandomDob() {
 
 Patient& randomPatient() {
     year_month_day t = getRandomDob();
-    Patient p(getRandomName(), t.year(), t.month(), t.day(), getRandomConditionLevel());
+    Patient p(getRandomName(), t.year(), t.month(), t.day());
     return p;
 }
 
