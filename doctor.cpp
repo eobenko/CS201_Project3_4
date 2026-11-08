@@ -39,7 +39,14 @@ int Doctor::skill_level()
 
 bool Doctor::is_on_shift(hours current_time)
 {
-    return (current_time >= shift_start && current_time <= shift_end);
+    if (shift_start <= shift_end)
+    {
+        return (current_time >= shift_start && current_time <= shift_end);
+    }
+    else
+    {
+        return (current_time >= shift_start || current_time <= shift_end);
+    }
 }
 
 hours Doctor::shift_start_time()
