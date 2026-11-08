@@ -56,4 +56,8 @@ Patient& randomPatient() {
     return p;
 }
 
-// STILL NEED randomDoctor
+Doctor& randomDoctor() {
+    year_month_day t = getRandomDob();
+    Doctor d(getRandomName(), t.year(), t.month(), t.day(), getRandomSkillLevel(), hours(9), hours(17));
+    return d;
+}
