@@ -1,5 +1,4 @@
 #include "person.h"
-#include <chrono>
 using namespace std::chrono;
 
 class Doctor : public Person

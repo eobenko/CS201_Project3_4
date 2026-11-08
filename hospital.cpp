@@ -11,8 +11,9 @@ class Hospital
 private:
     static const int B_PATIENTS = 4;
     static const int B_DOCTORS = 4;
+    hours current_time;
 
-    std::priority_queue<Patient &> patientQueue;
+    priority_queue<Patient &> patientQueue;
     BTree<Person &, B_PATIENTS> patients;
     BTree<Person &, B_DOCTORS> doctors;
 
@@ -73,7 +74,7 @@ public:
         patientQueue = std::priority_queue<Patient &>();
         patients = BTree<Person &, B_PATIENTS>();
         doctors = BTree<Person &, B_DOCTORS>();
-
+        current_time = hours(0);
         populateTrees();
     }
 
@@ -81,10 +82,21 @@ public:
     {
         patientQueue.push(p);
     }
+
     Patient &pop()
     {
         Patient &p = patientQueue.top();
         patientQueue.pop();
         return p;
+    }
+
+    void incrementTime()
+    {
+        current_time++;
+
+        if (current_time == hours(24))
+        {
+            current_time = hours(0);
+        }
     }
 };
