@@ -1,5 +1,7 @@
 At the start of every coding session:
 git pull
+git fetch origin
+git reset --hard origin/main
 
 
 For updating everything:
