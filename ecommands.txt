@@ -21,3 +21,10 @@ git add nameFile1.cpp nameFile2.cpp nameFile3.cpp
 git commit -m "Updated nameFile"
 git pull --rebase origin main
 git push
+
+
+
+
+
+For running just the visual file:
+g++ -std=c++17 visuals.cpp -o visuals -lsfml-graphics -lsfml-window -lsfml-system && ./visuals

@@ -13,23 +13,10 @@ int main() {
     RenderWindow window(VideoMode({1000, 650}), "Nota Hospital");
     window.setFramerateLimit(60);
 
-    // Background colors
+    // Colors
     Color background(30, 45, 55);
     Color buttonColor(220, 220, 210);
-
-    // Background
-    RectangleShape backgroundShape({1000.f, 650.f});
-    backgroundShape.setFillColor(background);
-
-    // Patient button
-    RectangleShape patientButton({300.f, 120.f});
-    patientButton.setPosition({175.f, 300.f});
-    patientButton.setFillColor(buttonColor);
-
-    // Doctor button
-    RectangleShape doctorButton({300.f, 120.f});
-    doctorButton.setPosition({525.f, 300.f});
-    doctorButton.setFillColor(buttonColor);
+    Color textColor(30, 45, 55);
 
     // Load font
     Font font;
@@ -38,20 +25,82 @@ int main() {
         return 1;
     }
 
-    // Hospital title
+    // Main menu title
     Text title(font, "NOTA HOSPITAL", 48);
     title.setFillColor(Color::White);
     title.setPosition({285.f, 110.f});
 
-    // Patient label
+    // Main menu buttons
+    RectangleShape patientButton({300.f, 120.f});
+    patientButton.setPosition({175.f, 300.f});
+    patientButton.setFillColor(buttonColor);
+
+    RectangleShape doctorButton({300.f, 120.f});
+    doctorButton.setPosition({525.f, 300.f});
+    doctorButton.setFillColor(buttonColor);
+
     Text patientText(font, "PATIENT", 30);
-    patientText.setFillColor(Color::Black);
+    patientText.setFillColor(textColor);
     patientText.setPosition({255.f, 340.f});
 
-    // Doctor label
     Text doctorText(font, "DOCTOR", 30);
-    doctorText.setFillColor(Color::Black);
+    doctorText.setFillColor(textColor);
     doctorText.setPosition({615.f, 340.f});
+
+    // Record page title
+    Text pageTitle(font, "", 45);
+    pageTitle.setFillColor(Color::White);
+    pageTitle.setPosition({350.f, 75.f});
+
+    // Name label and box
+    Text nameLabel(font, "NAME", 24);
+    nameLabel.setFillColor(Color::White);
+    nameLabel.setPosition({150.f, 205.f});
+
+    RectangleShape nameBox({700.f, 65.f});
+    nameBox.setPosition({150.f, 245.f});
+    nameBox.setFillColor(buttonColor);
+
+    // Date of birth label and boxes
+    Text dobLabel(font, "DATE OF BIRTH", 24);
+    dobLabel.setFillColor(Color::White);
+    dobLabel.setPosition({150.f, 345.f});
+
+    RectangleShape monthBox({180.f, 65.f});
+    monthBox.setPosition({150.f, 390.f});
+    monthBox.setFillColor(buttonColor);
+
+    RectangleShape dayBox({180.f, 65.f});
+    dayBox.setPosition({365.f, 390.f});
+    dayBox.setFillColor(buttonColor);
+
+    RectangleShape yearBox({270.f, 65.f});
+    yearBox.setPosition({580.f, 390.f});
+    yearBox.setFillColor(buttonColor);
+
+    Text monthText(font, "MM", 23);
+    monthText.setFillColor(textColor);
+    monthText.setPosition({215.f, 405.f});
+
+    Text dayText(font, "DD", 23);
+    dayText.setFillColor(textColor);
+    dayText.setPosition({430.f, 405.f});
+
+    Text yearText(font, "YYYY", 23);
+    yearText.setFillColor(textColor);
+    yearText.setPosition({680.f, 405.f});
+
+    // Back button
+    RectangleShape backButton({170.f, 60.f});
+    backButton.setPosition({415.f, 535.f});
+    backButton.setFillColor(buttonColor);
+
+    Text backText(font, "BACK", 26);
+    backText.setFillColor(textColor);
+    backText.setPosition({458.f, 547.f});
+
+    // 0 = main menu, 1 = patient, 2 = doctor
+    int page = 0;
 
     // Main loop
     while (window.isOpen()) {
@@ -59,16 +108,70 @@ int main() {
             if (event->is<Event::Closed>()) {
                 window.close();
             }
+
+            // Detect mouse clicks
+            if (const auto* mouse =
+                    event->getIf<Event::MouseButtonPressed>()) {
+
+                if (mouse->button == Mouse::Button::Left) {
+                    Vector2f mousePos(
+                        static_cast<float>(mouse->position.x),
+                        static_cast<float>(mouse->position.y)
+                    );
+
+                    if (page == 0) {
+                        if (patientButton.getGlobalBounds().contains(mousePos)) {
+                            page = 1;
+                        }
+                        else if (doctorButton.getGlobalBounds().contains(mousePos)) {
+                            page = 2;
+                        }
+                    }
+                    else {
+                        if (backButton.getGlobalBounds().contains(mousePos)) {
+                            page = 0;
+                        }
+                    }
+                }
+            }
         }
 
-        window.clear();
+        window.clear(background);
 
-        window.draw(backgroundShape);
-        window.draw(title);
-        window.draw(patientButton);
-        window.draw(doctorButton);
-        window.draw(patientText);
-        window.draw(doctorText);
+        if (page == 0) {
+            // Main menu
+            window.draw(title);
+            window.draw(patientButton);
+            window.draw(doctorButton);
+            window.draw(patientText);
+            window.draw(doctorText);
+        }
+        else {
+            // Patient or Doctor record page
+            if (page == 1) {
+                pageTitle.setString("PATIENT");
+            }
+            else {
+                pageTitle.setString("DOCTOR");
+            }
+
+            window.draw(pageTitle);
+
+            window.draw(nameLabel);
+            window.draw(nameBox);
+
+            window.draw(dobLabel);
+            window.draw(monthBox);
+            window.draw(dayBox);
+            window.draw(yearBox);
+
+            window.draw(monthText);
+            window.draw(dayText);
+            window.draw(yearText);
+
+            window.draw(backButton);
+            window.draw(backText);
+        }
 
         window.display();
     }
