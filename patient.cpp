@@ -1,27 +1,13 @@
 #include "patient.h"
 
-Patient::Patient(std::string n, int y, int m, int d, int c) : Person(n, y, m, d)
+Patient::Patient(std::string n, int y, int m, int d) : Person(n, y, m, d)
 {
-    if (c > 10)
-    {
-        c = 10;
-    }
-    else if (c < 0)
-    {
-        c = 0;
-    }
+    condition = 0;
 }
 
-Patient::Patient(std::string n, year y, month m, day d, int c) : Person(n, y, m, d)
+Patient::Patient(std::string n, year y, month m, day d) : Person(n, y, m, d)
 {
-    if (c > 10)
-    {
-        c = 10;
-    }
-    else if (c < 0)
-    {
-        c = 0;
-    }
+    condition = 0;
 }
 
 int Patient::getCondition()
@@ -29,7 +15,7 @@ int Patient::getCondition()
     return condition;
 }
 
-int Patient::setCondition(int c)
+void Patient::setCondition(int c)
 {
     if (c < 0)
         condition = 0;
