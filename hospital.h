@@ -17,9 +17,9 @@ private:
     BTree<Person &, B_PATIENTS> patients;
     BTree<Person &, B_DOCTORS> doctors;
 
-    void populateTrees();
 public:
     Hospital();
+    void populateTrees();
     void push(Patient &p);
     Patient &pop();
     void incrementTime();
