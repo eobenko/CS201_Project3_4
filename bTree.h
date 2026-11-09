@@ -19,8 +19,6 @@ public:
     bool leaf;
 
     BTreeNode(bool isLeaf = true) : n(0), leaf(isLeaf);
-
-    friend class Hospital;
 };
 
 // class for B-Tree
@@ -68,6 +66,8 @@ private:
 
     // Function to remove a key from the tree
     void remove(BTreeNode<T, ORDER> *node, T k);
+
+    friend class Hospital;
 
 public:
     BTree();

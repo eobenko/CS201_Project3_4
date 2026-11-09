@@ -14,9 +14,12 @@ private:
     hours current_time;
 
     priority_queue<Patient &> patientQueue;
-    BTree<Person &, B_PATIENTS> patients;
-    BTree<Person &, B_DOCTORS> doctors;
+    vector<Doctor &> activeDoctors;
+    BTree<Patient &, B_PATIENTS> patients;
+    BTree<Doctor &, B_DOCTORS> doctors;
     void populateTrees();
+    void findActiveDoctors();
+    void traverse(BTreeNode<Doctor &, B_DOCTORS> *x);
 
 public:
     Hospital();

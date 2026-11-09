@@ -51,11 +51,33 @@ void Hospital::populateTrees()
     }
 }
 
+void Hospital::findActiveDoctors()
+{
+    activeDoctors.clear();
+    traverse(doctors.root);
+}
+
+// Function to traverse the tree
+void Hospital::traverse(BTreeNode<Doctor &, B_DOCTORS> *x)
+{
+    int i;
+    for (i = 0; i < x->n; i++)
+    {
+        if (!x->leaf)
+            traverse(x->children[i]);
+        if (x->keys[i].isOnShift(current_time))
+            activeDoctors.push_back(x->keys[i]);
+    }
+
+    if (!x->leaf)
+        traverse(x->children[i]);
+}
+
 Hospital::Hospital()
 {
     patientQueue = std::priority_queue<Patient &>();
-    patients = BTree<Person &, B_PATIENTS>();
-    doctors = BTree<Person &, B_DOCTORS>();
+    patients = BTree<Patient &, B_PATIENTS>();
+    doctors = BTree<Doctor &, B_DOCTORS>();
     current_time = hours(0);
     populateTrees();
 }
