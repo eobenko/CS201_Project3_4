@@ -6,64 +6,68 @@
 
 // class for the node present in a B-Tree
 template <typename T, int ORDER>
-class BTreeNode {
+class BTreeNode
+{
 public:
-// Array of keys
-    T keys[ORDER - 1]; 
+    // Array of keys
+    T keys[ORDER - 1];
     // Array of child pointers
-    BTreeNode* children[ORDER]; 
-     // Current number of keys
+    BTreeNode *children[ORDER];
+    // Current number of keys
     int n;
     // True if leaf node, false otherwise
-    bool leaf; 
+    bool leaf;
 
     BTreeNode(bool isLeaf = true) : n(0), leaf(isLeaf);
+
+    friend class Hospital;
 };
 
 // class for B-Tree
 template <typename T, int ORDER>
-class BTree {
+class BTree
+{
 private:
-    BTreeNode<T, ORDER>* root; // Pointer to root node
+    BTreeNode<T, ORDER> *root; // Pointer to root node
 
     // Function to split a full child node
-    void splitChild(BTreeNode<T, ORDER>* x, int i);
+    void splitChild(BTreeNode<T, ORDER> *x, int i);
 
     // Function to insert a key in a non-full node
-    void insertNonFull(BTreeNode<T, ORDER>* x, T k);
+    void insertNonFull(BTreeNode<T, ORDER> *x, T k);
 
     // Function to traverse the tree
-    void traverse(BTreeNode<T, ORDER>* x);
+    void traverse(BTreeNode<T, ORDER> *x);
 
     // Function to search a key in the tree
-    BTreeNode<T, ORDER>* search(BTreeNode<T, ORDER>* x, T k);
+    BTreeNode<T, ORDER> *search(BTreeNode<T, ORDER> *x, T k);
 
     // Function to find the predecessor
-    T getPredecessor(BTreeNode<T, ORDER>* node, int idx);
+    T getPredecessor(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to find the successor
-    T getSuccessor(BTreeNode<T, ORDER>* node, int idx);
+    T getSuccessor(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to fill child node
-    void fill(BTreeNode<T, ORDER>* node, int idx);
+    void fill(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to borrow from previous sibling
-    void borrowFromPrev(BTreeNode<T, ORDER>* node, int idx);
+    void borrowFromPrev(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to borrow from next sibling
-    void borrowFromNext(BTreeNode<T, ORDER>* node, int idx);
+    void borrowFromNext(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to merge two nodes
-    void merge(BTreeNode<T, ORDER>* node, int idx);
+    void merge(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to remove a key from a non-leaf node
-    void removeFromNonLeaf(BTreeNode<T, ORDER>* node, int idx);
+    void removeFromNonLeaf(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to remove a key from a leaf node
-    void removeFromLeaf(BTreeNode<T, ORDER>* node, int idx);
+    void removeFromLeaf(BTreeNode<T, ORDER> *node, int idx);
 
     // Function to remove a key from the tree
-    void remove(BTreeNode<T, ORDER>* node, T k);
+    void remove(BTreeNode<T, ORDER> *node, T k);
 
 public:
     BTree();
@@ -75,7 +79,7 @@ public:
     void traverse();
 
     // Function to search a key in the tree
-    BTreeNode<T, ORDER>* search(T k);
+    BTreeNode<T, ORDER> *search(T k);
 
     // Function to remove a key from the tree
     void remove(T k);
