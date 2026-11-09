@@ -80,6 +80,7 @@ Hospital::Hospital()
     doctors = BTree<Doctor &, B_DOCTORS>();
     current_time = hours(0);
     populateTrees();
+    findActiveDoctors();
 }
 
 void Hospital::push(Patient &p)
@@ -102,4 +103,6 @@ void Hospital::incrementTime()
     {
         current_time = hours(0);
     }
+
+    findActiveDoctors();
 }
