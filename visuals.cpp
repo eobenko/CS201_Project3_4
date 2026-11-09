@@ -1,4 +1,4 @@
-#include "hospital.h"
+//#include "hospital.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <SFML/Window.hpp>
@@ -8,8 +8,8 @@
 
 using namespace std;
 using namespace sf;
-
-void runVisuals(Hospital &hospital)
+//Hospital &hospital
+void runVisuals()
 {
     //Create window
     RenderWindow window(VideoMode({1000, 650}), "Nota Hospital");
@@ -146,22 +146,22 @@ void runVisuals(Hospital &hospital)
             }
 
             //Detect mouse clicks
-            if (const auto* mouse=event->getIf<Event::MouseButtonPressed>()) 
-                    {
-
-                if (mouse->button==Mouse::Button::Left) 
+            //Detect mouse clicks
+            if (const auto* mouse=event->getIf<Event::MouseButtonPressed>())
+            {
+                if (mouse->button==Mouse::Button::Left)
                 {
                     Vector2f mousePos(static_cast<float>(mouse->position.x), static_cast<float>(mouse->position.y));
 
-                    if (page==0) 
+                    if (page==0)
                     {
-                        if (patientButton.getGlobalBounds().contains(mousePos)) 
+                        if (patientButton.getGlobalBounds().contains(mousePos))
                         {
-                            page = 1;
+                            page=1;
                         }
-                        else if (doctorButton.getGlobalBounds().contains(mousePos)) 
+                        else if (doctorButton.getGlobalBounds().contains(mousePos))
                         {
-                            page = 2;
+                            page=2;
                         }
                     }
                     else
@@ -170,6 +170,20 @@ void runVisuals(Hospital &hospital)
                         {
                             page=0;
                             selectedBox=0;
+
+                            //Clear stored inputs
+                            nameInput="";
+                            monthInput="";
+                            dayInput="";
+                            yearInput="";
+
+                            //Reset displayed text
+                            nameValue.setString("");
+                            monthText.setString("MM");
+                            dayText.setString("DD");
+                            yearText.setString("YYYY");
+
+                            //Clear search message
                             searchMessage.setString("");
                         }
                         else if (nameBox.getGlobalBounds().contains(mousePos))
@@ -213,7 +227,83 @@ void runVisuals(Hospital &hospital)
                     }
                 }
             }
+            //Keyboard text input
+            if (const auto* text=event->getIf<Event::TextEntered>())
+            {
+                if (page!=0 && selectedBox!=0)
+                {
+                    string* input=nullptr;
+                    int maxLength=0;
+
+                    if (selectedBox==1)
+                    {
+                        input=&nameInput;
+                        maxLength=40;
+                    }
+                    else if (selectedBox==2)
+                    {
+                        input=&monthInput;
+                        maxLength=2;
+                    }
+                    else if (selectedBox==3)
+                    {
+                        input=&dayInput;
+                        maxLength=2;
+                    }
+                    else if (selectedBox==4)
+                    {
+                        input=&yearInput;
+                        maxLength=4;
+                    }
+
+                    if (input!=nullptr)
+                    {
+                        if (text->unicode==8)
+                        {
+                            if (!input->empty())
+                            {
+                                input->pop_back();
+                            }
+                        }
+                        else if (input->size()<static_cast<size_t>(maxLength))
+                        {
+                            if (selectedBox==1)
+                            {
+                                //Letters and spaces
+                                if ((text->unicode>=65 && text->unicode<=90) ||
+                                    (text->unicode>=97 && text->unicode<=122) ||
+                                    text->unicode==32)
+                                {
+                                    *input+=static_cast<char>(text->unicode);
+                                }
+                            }
+                            else
+                            {
+                                //Numbers only
+                                if (text->unicode>=48 && text->unicode<=57)
+                                {
+                                    *input+=static_cast<char>(text->unicode);
+                                }
+                            }
+                        }
+
+                        //Update displayed text
+                        nameValue.setString(nameInput);
+                        monthText.setString(monthInput.empty() ? "MM" : monthInput);
+                        dayText.setString(dayInput.empty() ? "DD" : dayInput);
+                        yearText.setString(yearInput.empty() ? "YYYY" : yearInput);
+
+                        searchMessage.setString("");
+                    }
+                }
+            }
         }
+
+        //Highlight selected text box
+        nameBox.setFillColor(selectedBox==1 ? selectedColor : buttonColor);
+        monthBox.setFillColor(selectedBox==2 ? selectedColor : buttonColor);
+        dayBox.setFillColor(selectedBox==3 ? selectedColor : buttonColor);
+        yearBox.setFillColor(selectedBox==4 ? selectedColor : buttonColor);
 
         window.clear(background);
 
@@ -242,6 +332,7 @@ void runVisuals(Hospital &hospital)
 
             window.draw(nameLabel);
             window.draw(nameBox);
+            window.draw(nameValue);
 
             window.draw(dobLabel);
             window.draw(monthBox);
@@ -254,8 +345,20 @@ void runVisuals(Hospital &hospital)
 
             window.draw(backButton);
             window.draw(backText);
+            window.draw(searchButton);
+            window.draw(searchText);
+            window.draw(searchMessage);
         }
 
         window.display();
     }
 }
+
+
+#ifdef TEST_VISUALS
+int main()
+{
+    runVisuals();
+    return 0;
+}
+#endif
