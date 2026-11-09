@@ -22,11 +22,6 @@ void runVisuals(Hospital &hospital)
 
     //Load font
     Font font;
-    if (!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")) 
-    {
-        cout << "Font failed to load" << endl;
-        return 1;
-    }
 
     //Main menu title
     Text title(font, "NOTA HOSPITAL", 48);
