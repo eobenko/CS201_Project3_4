@@ -73,6 +73,11 @@ void Hospital::traverse(BTreeNode<Doctor &, B_DOCTORS> *x)
         traverse(x->children[i]);
 }
 
+void Hospital::findRandomPatients()
+{
+    //TODO: Implementation
+}
+
 Hospital::Hospital()
 {
     patientQueue = std::priority_queue<Patient &>();
