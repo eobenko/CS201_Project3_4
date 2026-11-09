@@ -1,7 +1,11 @@
-#include "hospital.cpp" //Will change to hospital.h
+#include "hospital.h"
+#include "visuals.h"
 
-int main() {
+int main()
+{
     Hospital hospital;
+
+    runVisuals(hospital);
 
     return 0;
 }

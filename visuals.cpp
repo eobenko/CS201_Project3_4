@@ -1,3 +1,4 @@
+#include "hospital.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <SFML/Window.hpp>
@@ -8,7 +9,8 @@
 using namespace std;
 using namespace sf;
 
-int main() {
+void runVisuals(Hospital &hospital)
+{
     //Create window
     RenderWindow window(VideoMode({1000, 650}), "Nota Hospital");
     window.setFramerateLimit(60);
@@ -186,6 +188,4 @@ int main() {
 
         window.display();
     }
-
-    return 0;
 }
