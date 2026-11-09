@@ -20,10 +20,11 @@ private:
     void populateTrees();
     void findActiveDoctors();
     void traverse(BTreeNode<Doctor &, B_DOCTORS> *x);
+    void findRandomPatients();
+    void push(Patient &p);
+    Patient &pop();
 
 public:
     Hospital();
-    void push(Patient &p);
-    Patient &pop();
     void incrementTime();
 };
