@@ -2,7 +2,6 @@
 
 int main() {
     Hospital hospital;
-    hospital.populateTrees();
 
     return 0;
 }
