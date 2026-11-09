@@ -22,6 +22,11 @@ void runVisuals(Hospital &hospital)
 
     //Load font
     Font font;
+    if (!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    {
+        cout<<"Font failed to load"<<endl;
+        return;
+    }
 
     //Main menu title
     Text title(font, "NOTA HOSPITAL", 48);
@@ -90,15 +95,45 @@ void runVisuals(Hospital &hospital)
 
     //Back button
     RectangleShape backButton({170.f, 60.f});//Back button
-    backButton.setPosition({415.f, 535.f});
+    backButton.setPosition({210.f, 535.f});
     backButton.setFillColor(buttonColor);
 
     Text backText(font, "BACK", 26);//Back text
     backText.setFillColor(textColor);
-    backText.setPosition({458.f, 547.f});
+    backText.setPosition({253.f, 547.f});
+
+    //Search button
+    RectangleShape searchButton({170.f, 60.f});//Search button
+    searchButton.setPosition({620.f, 535.f});
+    searchButton.setFillColor(buttonColor);
+
+    Text searchText(font, "SEARCH", 26);//Search text
+    searchText.setFillColor(textColor);
+    searchText.setPosition({643.f, 547.f});
 
     //0=main menu, 1=patient, 2=doctor
-    int page = 0;
+    int page=0;
+    //0=none, 1=name, 2=month, 3=day, 4=year
+    int selectedBox=0;
+
+    //User-entered information
+    string nameInput="";
+    string monthInput="";
+    string dayInput="";
+    string yearInput="";
+
+    //Selected box color
+    Color selectedColor(255, 235, 150);
+
+    //Name input text
+    Text nameValue(font, "", 25);
+    nameValue.setFillColor(textColor);
+    nameValue.setPosition({165.f, 260.f});
+
+    //Search feedback
+    Text searchMessage(font, "", 18);
+    searchMessage.setFillColor(Color::White);
+    searchMessage.setPosition({150.f, 485.f});
 
     //Main loop
     while (window.isOpen()) 
@@ -129,11 +164,51 @@ void runVisuals(Hospital &hospital)
                             page = 2;
                         }
                     }
-                    else 
+                    else
                     {
-                        if (backButton.getGlobalBounds().contains(mousePos)) 
+                        if (backButton.getGlobalBounds().contains(mousePos))
                         {
-                            page = 0;
+                            page=0;
+                            selectedBox=0;
+                            searchMessage.setString("");
+                        }
+                        else if (nameBox.getGlobalBounds().contains(mousePos))
+                        {
+                            selectedBox=1;
+                        }
+                        else if (monthBox.getGlobalBounds().contains(mousePos))
+                        {
+                            selectedBox=2;
+                        }
+                        else if (dayBox.getGlobalBounds().contains(mousePos))
+                        {
+                            selectedBox=3;
+                        }
+                        else if (yearBox.getGlobalBounds().contains(mousePos))
+                        {
+                            selectedBox=4;
+                        }
+                        else if (searchButton.getGlobalBounds().contains(mousePos))
+                        {
+                            selectedBox=0;
+
+                            if (nameInput.empty() || monthInput.empty() ||
+                                dayInput.empty() || yearInput.empty())
+                            {
+                                searchMessage.setString("Please complete every field.");
+                            }
+                            else
+                            {
+                                cout<<"Searching for: "<<nameInput<<endl;
+                                cout<<"Date of birth: "<<monthInput<<"/"
+                                    <<dayInput<<"/"<<yearInput<<endl;
+
+                                searchMessage.setString("Search submitted (B-Tree not connected).");
+                            }
+                        }
+                        else
+                        {
+                            selectedBox=0;
                         }
                     }
                 }
