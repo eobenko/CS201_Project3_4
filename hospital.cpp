@@ -2,14 +2,6 @@
 
 void Hospital::populateDoctors()
 {
-    ifstream people("people.txt");
-
-    if (!people)
-    {
-        cerr << "Failed to open people.txt\n";
-        return;
-    }
-
     string firstName;
     string lastName;
     int year;
@@ -20,7 +12,7 @@ void Hospital::populateDoctors()
     uniform_int_distribution<int> skillDist(Doctor::MIN_SKILL, Doctor::MAX_SKILL);
     uniform_int_distribution<int> shiftStartDist(0, 23);
     uniform_int_distribution<int> shiftEndDist(0, 23);
-    int skill = randomSkill(gen);
+    int skill;
     int shiftStart;
     int shiftEnd;
     const int DOCTOR_AMOUNT = 2000;
@@ -47,29 +39,34 @@ void Hospital::populateDoctors()
     }
 }
 
-int Hospital::randomSkill(mt19937 &gen)
+/*
+int Hospital::normalDistribution(mt19937 &gen, int min, int max)
 {
-    double mean = (Doctor::MIN_SKILL + Doctor::MAX_SKILL) / 2.0;
-    double standard_deviation = (Doctor::MAX_SKILL - Doctor::MIN_SKILL) / 6.0;
+    if (min >= max)
+    {
+        return min;
+    }
+
+    double mean = (min + max) / 2.0;
+    double standard_deviation = (max - min) / 6.0;
     normal_distribution<double> dist(mean, standard_deviation);
 
-    int skill;
+    int result;
     do
     {
-        skill = round(dist(gen));
-    } while (skill < Doctor::MIN_SKILL || skill > Doctor::MAX_SKILL);
+        result = round(dist(gen));
+    } while (result < min || result > max);
 
-    return skill;
+    return result;
 }
-
+*/
 void Hospital::findActiveDoctors()
 {
     activeDoctors.clear();
     traverse(doctors.root);
 }
 
-// Function to traverse the tree
-void Hospital::traverse(BTreeNode<Doctor &, B_DOCTORS> *x)
+void Hospital::traverse(BTreeNode<Doctor, B_DOCTORS> *x)
 {
     int i;
     for (i = 0; i < x->n; i++)
@@ -86,27 +83,47 @@ void Hospital::traverse(BTreeNode<Doctor &, B_DOCTORS> *x)
 
 void Hospital::findRandomPatients()
 {
-    // TODO: Implementation
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> patientDist(0, 5);
+    uniform_int_distribution<int> conditionDist(Patient::MIN_CONDITION, Patient::MAX_CONDITION);
+
+    for (int i = 0; i < patientDist(gen); i++)
+    {
+        string firstName;
+        string lastName;
+        int year;
+        int month;
+        int day;
+        if (people >> firstName >> lastName >> year >> month >> day)
+        {
+            Patient patient(firstName + " " + lastName, year, month, day);
+            patients.insert(patient);
+            patient.setCondition(conditionDist(gen));
+            push(patient);
+        }
+    }
 }
 
-Hospital::Hospital()
+Hospital::Hospital() : people("people.txt")
 {
     patientQueue = std::priority_queue<Patient &>();
     patients = BTree<Patient &, B_PATIENTS>();
     doctors = BTree<Doctor &, B_DOCTORS>();
     current_time = hours(0);
+
     populateDoctors();
     findActiveDoctors();
 }
 
-void Hospital::push(Patient &p)
+void Hospital::push(Patient p)
 {
     patientQueue.push(p);
 }
 
-Patient &Hospital::pop()
+Patient Hospital::pop()
 {
-    Patient &p = patientQueue.top();
+    Patient p = patientQueue.top();
     patientQueue.pop();
     return p;
 }
@@ -121,4 +138,5 @@ void Hospital::incrementTime()
     }
 
     findActiveDoctors();
+    findRandomPatients();
 }

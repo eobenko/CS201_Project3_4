@@ -9,13 +9,9 @@ public:
     Patient(std::string n, int y, int m, int d);
     Patient(std::string n, year y, month m, day d);
 
+    static const int MIN_CONDITION = 0;
+    static const int MAX_CONDITION = 10;
+
     int getCondition();
     void setCondition(int c);
-
-    bool operator==(const Patient &rhs);
-    bool operator!=(const Patient &rhs);
-    bool operator<(const Patient &rhs);
-    bool operator>(const Patient &rhs);
-    bool operator<=(const Patient &rhs);
-    bool operator>=(const Patient &rhs);
 };

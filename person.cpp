@@ -29,6 +29,7 @@ years Person::getAge()
     return age;
 }
 
+// TODO: Extend comparison operators to include name as well as date of birth for project 4
 bool Person::operator==(const Person &rhs)
 {
     return dob == rhs.dob;

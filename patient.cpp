@@ -2,12 +2,12 @@
 
 Patient::Patient(std::string n, int y, int m, int d) : Person(n, y, m, d)
 {
-    condition = 0;
+    condition = MIN_CONDITION;
 }
 
 Patient::Patient(std::string n, year y, month m, day d) : Person(n, y, m, d)
 {
-    condition = 0;
+    condition = MIN_CONDITION;
 }
 
 int Patient::getCondition()
@@ -17,35 +17,10 @@ int Patient::getCondition()
 
 void Patient::setCondition(int c)
 {
-    if (c < 0)
-        condition = 0;
-    else if (c > 10)
-        condition = 10;
+    if (c < MIN_CONDITION)
+        condition = MIN_CONDITION;
+    else if (c > MAX_CONDITION)
+        condition = MAX_CONDITION;
     else
         condition = c;
-}
-
-bool Patient::operator==(const Patient &rhs)
-{
-    return condition == rhs.condition;
-}
-bool Patient::operator!=(const Patient &rhs)
-{
-    return condition != rhs.condition;
-}
-bool Patient::operator<(const Patient &rhs)
-{
-    return condition < rhs.condition;
-}
-bool Patient::operator>(const Patient &rhs)
-{
-    return condition > rhs.condition;
-}
-bool Patient::operator<=(const Patient &rhs)
-{
-    return condition <= rhs.condition;
-}
-bool Patient::operator>=(const Patient &rhs)
-{
-    return condition >= rhs.condition;
 }
