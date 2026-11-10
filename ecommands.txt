@@ -27,4 +27,7 @@ git push
 
 
 For running just the visual file:
+g++ -std=c++17 -DTEST_VISUALS visuals.cpp -o visuals -lsfml-graphics -lsfml-window -lsfml-system && ./visuals
+
+For running the visual file through the main.cpp on 11/9/26 2:36 PM:
 g++ -std=c++20 main.cpp visuals.cpp hospital.cpp patient.cpp doctor.cpp person.cpp -o hospital -lsfml-graphics -lsfml-window -lsfml-system && ./hospital
