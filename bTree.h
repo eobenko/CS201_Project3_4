@@ -81,8 +81,10 @@ public:
     // Function to search a key in the tree
     BTreeNode<T, ORDER> *search(T k);
 
+    /* More project 4 fodder
     // Function to remove a key from the tree
     void remove(T k);
+    */
 };
 
 #endif
