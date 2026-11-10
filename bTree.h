@@ -18,7 +18,7 @@ public:
     // True if leaf node, false otherwise
     bool leaf;
 
-    BTreeNode(bool isLeaf = true) : n(0), leaf(isLeaf);
+    BTreeNode(bool isLeaf = true);
 };
 
 // class for B-Tree
