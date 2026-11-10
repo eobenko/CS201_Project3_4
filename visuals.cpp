@@ -49,49 +49,68 @@ void runVisuals()
     Text doctorText(font, "DOCTOR", 30);//Doctor text
     doctorText.setFillColor(textColor);
     doctorText.setPosition({615.f, 340.f});
+ 
+    //Advance time button
+    RectangleShape timeButton({300.f, 80.f});//Advance time button
+    timeButton.setPosition({350.f, 465.f});
+    timeButton.setFillColor(buttonColor);
+
+    Text timeButtonText(font, "ADVANCE TIME", 27);//Advance time button text
+    timeButtonText.setFillColor(textColor);
+    timeButtonText.setPosition({387.f, 483.f});
+
+    //Simulation time counter
+    int currentHour=0;
+    int currentDay=1;
+
+    Text timeCounter(font, "DAY: " + to_string(currentDay) + "  HOUR: " + to_string(currentHour), 20);
+    timeCounter.setFillColor(Color::White);
+    timeCounter.setPosition({770.f, 20.f});
 
     //Record page title
     Text pageTitle(font, "", 45);//Page title
     pageTitle.setFillColor(Color::White);
     pageTitle.setPosition({350.f, 75.f});
 
+    
     //Name label and box
     Text nameLabel(font, "NAME", 24);//Name label
     nameLabel.setFillColor(Color::White);
-    nameLabel.setPosition({150.f, 205.f});
+    nameLabel.setPosition({60.f, 205.f});
 
-    RectangleShape nameBox({700.f, 65.f});//Name box
-    nameBox.setPosition({150.f, 245.f});
+    RectangleShape nameBox({400.f, 65.f});//Name box
+    nameBox.setPosition({60.f, 245.f});
     nameBox.setFillColor(buttonColor);
 
     //Date of birth label and boxes
     Text dobLabel(font, "DATE OF BIRTH", 24);//Date of birth label
     dobLabel.setFillColor(Color::White);
-    dobLabel.setPosition({150.f, 345.f});
+    dobLabel.setPosition({60.f, 345.f});
 
-    RectangleShape monthBox({180.f, 65.f});//Month box
-    monthBox.setPosition({150.f, 390.f});
+    RectangleShape monthBox({105.f, 65.f});//Month box
+    monthBox.setPosition({60.f, 390.f});
     monthBox.setFillColor(buttonColor);
 
-    RectangleShape dayBox({180.f, 65.f});//Day box
-    dayBox.setPosition({365.f, 390.f});
+    RectangleShape dayBox({105.f, 65.f});//Day box
+    dayBox.setPosition({180.f, 390.f});
     dayBox.setFillColor(buttonColor);
 
-    RectangleShape yearBox({270.f, 65.f});//Year box
-    yearBox.setPosition({580.f, 390.f});
+    RectangleShape yearBox({160.f, 65.f});//Year box
+    yearBox.setPosition({300.f, 390.f});
     yearBox.setFillColor(buttonColor);
 
     Text monthText(font, "MM", 23);//Month text
     monthText.setFillColor(textColor);
-    monthText.setPosition({215.f, 405.f});
+    monthText.setPosition({80.f, 405.f});
 
     Text dayText(font, "DD", 23);//Day text
     dayText.setFillColor(textColor);
-    dayText.setPosition({430.f, 405.f});
+    dayText.setPosition({200.f, 405.f});
 
     Text yearText(font, "YYYY", 23);//Year text
     yearText.setFillColor(textColor);
-    yearText.setPosition({680.f, 405.f});
+    yearText.setPosition({330.f, 405.f});
+
 
     //Back button
     RectangleShape backButton({170.f, 60.f});//Back button
@@ -125,15 +144,33 @@ void runVisuals()
     //Selected box color
     Color selectedColor(255, 235, 150);
 
+    
     //Name input text
     Text nameValue(font, "", 25);
     nameValue.setFillColor(textColor);
-    nameValue.setPosition({165.f, 260.f});
+    nameValue.setPosition({75.f, 260.f});
 
     //Search feedback
     Text searchMessage(font, "", 18);
     searchMessage.setFillColor(Color::White);
-    searchMessage.setPosition({150.f, 485.f});
+    searchMessage.setPosition({60.f, 485.f});
+
+    //Result panel
+    RectangleShape resultBox({430.f, 275.f});
+    resultBox.setPosition({510.f, 190.f});
+    resultBox.setFillColor(buttonColor);
+
+    Text resultHeading(font, "SEARCH RESULT", 23);//Result heading
+    resultHeading.setFillColor(textColor);
+    resultHeading.setPosition({535.f, 205.f});
+
+    Text resultText(font, "", 18);//Result text
+    resultText.setFillColor(textColor);
+    resultText.setPosition({535.f, 250.f});
+
+    //0=not searched, 1=found, 2=not found
+    int resultStatus=0;
+
 
     //Main loop
     while (window.isOpen()) 
@@ -163,6 +200,29 @@ void runVisuals()
                         {
                             page=2;
                         }
+                        else if (timeButton.getGlobalBounds().contains(mousePos))
+                        {
+                            //TODO: Replace with hospital.incrementTime() once integrated
+
+                            //Temporary simulation time logic
+                            currentHour++;
+
+                            if (currentHour==24)
+                            {
+                                currentHour=0;
+                                currentDay++;
+                            }
+
+                            //Update displayed counter
+                            string hourString=to_string(currentHour);
+
+                            if (currentHour<10)
+                            {
+                                hourString="0"+hourString;
+                            }
+
+                            timeCounter.setString("DAY: "+to_string(currentDay)+"  HOUR: "+hourString);
+                        }
                     }
                     else
                     {
@@ -183,8 +243,10 @@ void runVisuals()
                             dayText.setString("DD");
                             yearText.setString("YYYY");
 
-                            //Clear search message
+                            //Clear search message and results
                             searchMessage.setString("");
+                            resultStatus=0;
+                            resultText.setString("");
                         }
                         else if (nameBox.getGlobalBounds().contains(mousePos))
                         {
@@ -205,19 +267,61 @@ void runVisuals()
                         else if (searchButton.getGlobalBounds().contains(mousePos))
                         {
                             selectedBox=0;
+                            searchMessage.setString("");
 
                             if (nameInput.empty() || monthInput.empty() ||
                                 dayInput.empty() || yearInput.empty())
                             {
-                                searchMessage.setString("Please complete every field.");
+                                resultStatus=2;
+                                resultText.setFillColor(Color::Red);
+                                resultText.setString("Please complete every field.");
                             }
                             else
                             {
-                                cout<<"Searching for: "<<nameInput<<endl;
-                                cout<<"Date of birth: "<<monthInput<<"/"
-                                    <<dayInput<<"/"<<yearInput<<endl;
+                                //TODO: Connect to Hospital B-Tree search
+                                //TODO: Search patients if page==1
+                                //TODO: Search doctors if page==2
+                                //TODO: Populate resultText with returned information
 
-                                searchMessage.setString("Search submitted (B-Tree not connected).");
+                                //Temporary demonstration
+                                if (nameInput=="TEST")
+                                {
+                                    resultStatus=1;
+                                    resultText.setFillColor(textColor);
+
+                                    if (page==1)
+                                    {
+                                        resultText.setString(
+                                            "RECORD FOUND (DEMO)\n"
+                                            "Name: Test Patient\n"
+                                            "DOB: 01/01/2000\n"
+                                            "Age: 26\n"
+                                            "Condition: 6 / 10"
+                                        );
+                                    }
+                                    else
+                                    {
+                                        resultText.setString(
+                                            "RECORD FOUND (DEMO)\n"
+                                            "Name: Test Doctor\n"
+                                            "DOB: 01/01/2000\n"
+                                            "Age: 26\n"
+                                            "Skill: 8 / 10\n"
+                                            "Shift: 08:00 - 16:00\n"
+                                            "On shift: Yes"
+                                        );
+                                    }
+                                }
+                                else
+                                {
+                                    resultStatus=2;
+                                    resultText.setFillColor(Color::Red);
+                                    resultText.setString(
+                                        "RECORD NOT FOUND (DEMO)\n\n"
+                                        "No matching record.\n"
+                                        "Check the name and date of birth."
+                                    );
+                                }
                             }
                         }
                         else
@@ -238,7 +342,7 @@ void runVisuals()
                     if (selectedBox==1)
                     {
                         input=&nameInput;
-                        maxLength=40;
+                        maxLength=24;
                     }
                     else if (selectedBox==2)
                     {
@@ -294,6 +398,8 @@ void runVisuals()
                         yearText.setString(yearInput.empty() ? "YYYY" : yearInput);
 
                         searchMessage.setString("");
+                        resultStatus=0;
+                        resultText.setString("");
                     }
                 }
             }
@@ -315,6 +421,9 @@ void runVisuals()
             window.draw(doctorButton);
             window.draw(patientText);
             window.draw(doctorText);
+            window.draw(timeButton);
+            window.draw(timeButtonText);
+            window.draw(timeCounter);
         }
         else//Drawing the patient or doctor record page
         {
@@ -342,6 +451,14 @@ void runVisuals()
             window.draw(monthText);
             window.draw(dayText);
             window.draw(yearText);
+
+            //Display search results
+            if (resultStatus!=0)
+            {
+                window.draw(resultBox);
+                window.draw(resultHeading);
+                window.draw(resultText);
+            }
 
             window.draw(backButton);
             window.draw(backText);
