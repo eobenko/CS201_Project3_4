@@ -107,9 +107,9 @@ void Hospital::findRandomPatients()
 
 Hospital::Hospital() : people("people.txt")
 {
-    patientQueue = std::priority_queue<Patient &>();
-    patients = BTree<Patient &, B_PATIENTS>();
-    doctors = BTree<Doctor &, B_DOCTORS>();
+    patientQueue = std::priority_queue<Patient>();
+    patients = BTree<Patient, B_PATIENTS>();
+    doctors = BTree<Doctor, B_DOCTORS>();
     current_time = hours(0);
 
     populateDoctors();

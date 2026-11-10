@@ -5,8 +5,8 @@ class Doctor : public Person
 {
 private:
     int skill;
-    hours shift_start;
-    hours shift_end;
+    hours shiftStart;
+    hours shiftEnd;
 
 public:
     static const int MIN_SKILL = 1;
@@ -14,8 +14,8 @@ public:
 
     Doctor(std::string n, year y, month m, day d, int s, hours start, hours end);
     Doctor(std::string n, int y, int m, int d, int s, int start, int end);
-    int skill_level();
-    bool is_on_shift(hours current_time);
-    hours shift_start_time();
-    hours shift_end_time();
+    int skillLevel();
+    bool isOnShift(hours current_time);
+    hours shiftStartTime();
+    hours shiftEndTime();
 };

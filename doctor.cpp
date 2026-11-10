@@ -3,8 +3,8 @@
 Doctor::Doctor(std::string n, year y, month m, day d, int s, hours start, hours end) : Person(n, y, m, d)
 {
     skill = s;
-    shift_start = start;
-    shift_end = end;
+    shiftStart = start;
+    shiftEnd = end;
 
     if (skill > MAX_SKILL)
     {
@@ -19,8 +19,8 @@ Doctor::Doctor(std::string n, year y, month m, day d, int s, hours start, hours 
 Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : Person(n, y, m, d)
 {
     skill = s;
-    shift_start = hours(start);
-    shift_end = hours(end);
+    shiftStart = hours(start);
+    shiftEnd = hours(end);
 
     if (skill > MAX_SKILL)
     {
@@ -32,29 +32,29 @@ Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : 
     }
 }
 
-int Doctor::skill_level()
+int Doctor::skillLevel()
 {
     return skill;
 }
 
-bool Doctor::is_on_shift(hours current_time)
+bool Doctor::isOnShift(hours current_time)
 {
-    if (shift_start <= shift_end)
+    if (shiftStart <= shiftEnd)
     {
-        return (current_time >= shift_start && current_time <= shift_end);
+        return (current_time >= shiftStart && current_time <= shiftEnd);
     }
     else
     {
-        return (current_time >= shift_start || current_time <= shift_end);
+        return (current_time >= shiftStart || current_time <= shiftEnd);
     }
 }
 
-hours Doctor::shift_start_time()
+hours Doctor::shiftStartTime()
 {
-    return shift_start;
+    return shiftStart;
 }
 
-hours Doctor::shift_end_time()
+hours Doctor::shiftEndTime()
 {
-    return shift_end;
+    return shiftEnd;
 }
