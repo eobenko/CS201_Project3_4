@@ -17,7 +17,8 @@ private:
     vector<Doctor &> activeDoctors;
     BTree<Patient &, B_PATIENTS> patients;
     BTree<Doctor &, B_DOCTORS> doctors;
-    void populateTrees();
+    void populateDoctors();
+    int randomSkill(mt19937 &gen);
     void findActiveDoctors();
     void traverse(BTreeNode<Doctor &, B_DOCTORS> *x);
     void findRandomPatients();

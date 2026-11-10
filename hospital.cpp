@@ -1,6 +1,6 @@
 #include "hospital.h"
 
-void Hospital::populateTrees()
+void Hospital::populateDoctors()
 {
     ifstream people("people.txt");
 
@@ -20,7 +20,7 @@ void Hospital::populateTrees()
     uniform_int_distribution<int> skillDist(Doctor::MIN_SKILL, Doctor::MAX_SKILL);
     uniform_int_distribution<int> shiftStartDist(0, 23);
     uniform_int_distribution<int> shiftEndDist(0, 23);
-    int skill;
+    int skill = randomSkill(gen);
     int shiftStart;
     int shiftEnd;
     const int DOCTOR_AMOUNT = 2000;
@@ -28,27 +28,38 @@ void Hospital::populateTrees()
 
     while (people >> firstName >> lastName >> year >> month >> day)
     {
-        if (count < DOCTOR_AMOUNT)
+        if (count >= DOCTOR_AMOUNT)
         {
-            skill = skillDist(gen);
-            shiftStart = shiftStartDist(gen);
+            break;
+        }
+        skill = skillDist(gen);
+        shiftStart = shiftStartDist(gen);
+        shiftEnd = shiftEndDist(gen);
+
+        while (shiftEnd == shiftStart)
+        {
             shiftEnd = shiftEndDist(gen);
-
-            while (shiftEnd == shiftStart)
-            {
-                shiftEnd = shiftEndDist(gen);
-            }
-
-            Doctor doctor(firstName + " " + lastName, year, month, day, skill, shiftStart, shiftEnd);
-            doctors.insert(doctor);
-            count++;
         }
-        else
-        {
-            Patient patient(firstName + " " + lastName, year, month, day);
-            patients.insert(patient);
-        }
+
+        Doctor doctor(firstName + " " + lastName, year, month, day, skill, shiftStart, shiftEnd);
+        doctors.insert(doctor);
+        count++;
     }
+}
+
+int Hospital::randomSkill(mt19937 &gen)
+{
+    double mean = (Doctor::MIN_SKILL + Doctor::MAX_SKILL) / 2.0;
+    double standard_deviation = (Doctor::MAX_SKILL - Doctor::MIN_SKILL) / 6.0;
+    normal_distribution<double> dist(mean, standard_deviation);
+
+    int skill;
+    do
+    {
+        skill = round(dist(gen));
+    } while (skill < Doctor::MIN_SKILL || skill > Doctor::MAX_SKILL);
+
+    return skill;
 }
 
 void Hospital::findActiveDoctors()
@@ -75,7 +86,7 @@ void Hospital::traverse(BTreeNode<Doctor &, B_DOCTORS> *x)
 
 void Hospital::findRandomPatients()
 {
-    //TODO: Implementation
+    // TODO: Implementation
 }
 
 Hospital::Hospital()
@@ -84,7 +95,7 @@ Hospital::Hospital()
     patients = BTree<Patient &, B_PATIENTS>();
     doctors = BTree<Doctor &, B_DOCTORS>();
     current_time = hours(0);
-    populateTrees();
+    populateDoctors();
     findActiveDoctors();
 }
 
