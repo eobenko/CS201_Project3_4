@@ -30,27 +30,27 @@ years Person::getAge()
 }
 
 // TODO: Extend comparison operators to include name as well as date of birth for project 4
-bool Person::operator==(const Person &rhs)
+bool Person::operator==(const Person &rhs) const
 {
     return dob == rhs.dob;
 }
-bool Person::operator!=(const Person &rhs)
+bool Person::operator!=(const Person &rhs) const
 {
     return dob != rhs.dob;
 }
-bool Person::operator<(const Person &rhs)
+bool Person::operator<(const Person &rhs) const
 {
     return dob < rhs.dob;
 }
-bool Person::operator>(const Person &rhs)
+bool Person::operator>(const Person &rhs) const
 {
     return dob > rhs.dob;
 }
-bool Person::operator<=(const Person &rhs)
+bool Person::operator<=(const Person &rhs) const
 {
     return dob <= rhs.dob;
 }
-bool Person::operator>=(const Person &rhs)
+bool Person::operator>=(const Person &rhs) const
 {
     return dob >= rhs.dob;
 }

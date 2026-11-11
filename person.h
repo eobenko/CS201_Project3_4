@@ -16,12 +16,12 @@ public:
     std::string getName();
     year_month_day getDob();
     years getAge();
-    bool operator==(const Person &rhs);
-    bool operator!=(const Person &rhs);
-    bool operator<(const Person &rhs);
-    bool operator>(const Person &rhs);
-    bool operator<=(const Person &rhs);
-    bool operator>=(const Person &rhs);
+    bool operator==(const Person &rhs) const;
+    bool operator!=(const Person &rhs) const;
+    bool operator<(const Person &rhs) const;
+    bool operator>(const Person &rhs) const;
+    bool operator<=(const Person &rhs) const;
+    bool operator>=(const Person &rhs) const;
 };
 
 #endif

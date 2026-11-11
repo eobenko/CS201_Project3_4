@@ -1,8 +1,9 @@
 # Alexander Loff 11-10-2026
 
-FILES = bTree.cpp doctor.cpp hospital.cpp main.cpp patient.cpp person.cpp personGenerator.cpp randomizer.cpp visuals.cpp 
+FILES = bTree.cpp doctor.cpp hospital.cpp main.cpp patient.cpp person.cpp randomizer.cpp visuals.cpp 
 BINARY_NAME = main.out
-COMPILE_FLAGS = -o $(BINARY_NAME) -std=c++20
+SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+COMPILE_FLAGS = -o $(BINARY_NAME) -std=c++20 $(SFML_FLAGS)
 DEBUG_COMPILE_FLAGS = -g -O0
 COMPILER = g++
 
