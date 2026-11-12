@@ -23,7 +23,8 @@ void runVisuals()
 
     //Load font
     Font font;
-    if (!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    // if (!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    if (!font.openFromFile("./DejaVuSans.ttf"))
     {
         cout<<"Font failed to load"<<endl;
         return;

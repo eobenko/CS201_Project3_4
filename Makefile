@@ -7,7 +7,7 @@ COMPILE_FLAGS = -o $(BINARY_NAME) -std=c++20 $(SFML_FLAGS)
 DEBUG_COMPILE_FLAGS = -g -O0
 COMPILER = g++
 
-.PHONY: build build_debug run clean
+.PHONY: build build_debug run clean test_visuals
 
 # Create the binary
 build: $(FILES)
@@ -24,4 +24,7 @@ run:
 # Remove the compiled binary
 clean:
 	rm -f $(BINARY_NAME)
+
+test_visuals:
+	g++ -std=c++17 -DTEST_VISUALS visuals.cpp -o visuals -lsfml-graphics -lsfml-window -lsfml-system && ./visuals
 
