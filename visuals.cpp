@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <array>
+#include <vector>
 
 using namespace std;
 using namespace sf;
@@ -12,7 +13,7 @@ using namespace sf;
 void runVisuals()
 {
     //Create window
-    RenderWindow window(VideoMode({1000, 650}), "Nota Hospital");
+    RenderWindow window(VideoMode({1000, 650}), "Ronita Hospital", Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
 
     //Colors
@@ -58,6 +59,15 @@ void runVisuals()
     Text timeButtonText(font, "ADVANCE TIME", 27);//Advance time button text
     timeButtonText.setFillColor(textColor);
     timeButtonText.setPosition({387.f, 483.f});
+
+    //Patient list button
+    RectangleShape listButton({300.f, 60.f});
+    listButton.setPosition({350.f, 565.f});
+    listButton.setFillColor(buttonColor);
+
+    Text listButtonText(font, "PATIENT LIST", 25);
+    listButtonText.setFillColor(textColor);
+    listButtonText.setPosition({400.f, 578.f});
 
     //Simulation time counter
     int currentHour=0;
@@ -121,6 +131,15 @@ void runVisuals()
     backText.setFillColor(textColor);
     backText.setPosition({253.f, 547.f});
 
+    //Patient list back button
+    RectangleShape listBackButton({170.f, 60.f});
+    listBackButton.setPosition({415.f, 560.f});
+    listBackButton.setFillColor(buttonColor);
+
+    Text listBackText(font, "BACK", 26);
+    listBackText.setFillColor(textColor);
+    listBackText.setPosition({458.f, 572.f});
+
     //Search button
     RectangleShape searchButton({170.f, 60.f});//Search button
     searchButton.setPosition({620.f, 535.f});
@@ -130,8 +149,59 @@ void runVisuals()
     searchText.setFillColor(textColor);
     searchText.setPosition({643.f, 547.f});
 
-    //0=main menu, 1=patient, 2=doctor
+    //0=main menu, 1=patient, 2=doctor, 3=patient list
     int page=0;
+
+
+    //Temporary patient information
+    struct PatientRow
+    {
+        string name;
+        string dob;
+        int age;
+        int condition;
+    };
+
+    //TEST PURPOSES ONLY
+    vector<PatientRow> patientList={{"Alex Morgan", "05/12/1990", 36, 6}, {"Jordan Lee", "08/23/1985", 41, 9}, {"Taylor Smith", "01/14/2000", 26, 2}, {"Casey Brown", "07/03/1977", 49, 8}, {"Morgan Davis", "11/29/1998", 27, 4}, {"Jamie Wilson", "03/17/1965", 61, 7}, {"Riley Clark", "09/08/2003", 23, 1}, {"Avery Hall", "02/25/1994", 32, 10}, {"Cameron Jones", "10/10/1970", 56, 5}};
+
+    //Scrolling information
+    int scrollOffset=0;
+    const int visibleRows=6;
+
+    //Patient list title
+    Text listTitle(font, "PATIENT LIST", 42);
+    listTitle.setFillColor(Color::White);
+    listTitle.setPosition({340.f, 55.f});
+
+    //Table headers
+    Text nameHeader(font, "NAME", 21);
+    nameHeader.setFillColor(Color::White);
+    nameHeader.setPosition({80.f, 140.f});
+
+    Text dobHeader(font, "DOB", 21);
+    dobHeader.setFillColor(Color::White);
+    dobHeader.setPosition({345.f, 140.f});
+
+    Text ageHeader(font, "AGE", 21);
+    ageHeader.setFillColor(Color::White);
+    ageHeader.setPosition({555.f, 140.f});
+
+    Text conditionHeader(font, "CONDITION", 21);
+    conditionHeader.setFillColor(Color::White);
+    conditionHeader.setPosition({730.f, 140.f});
+
+    //Reusable patient row
+    RectangleShape listRow({850.f, 48.f});
+    Text rowText(font, "", 18);
+    rowText.setFillColor(textColor);
+
+    //Scroll instructions
+    Text scrollInstructions(font, "Use mouse wheel to scroll", 17);
+    scrollInstructions.setFillColor(Color::White);
+    scrollInstructions.setPosition({650.f, 545.f});
+
+
     //0=none, 1=name, 2=month, 3=day, 4=year
     int selectedBox=0;
 
@@ -188,7 +258,7 @@ void runVisuals()
             {
                 if (mouse->button==Mouse::Button::Left)
                 {
-                    Vector2f mousePos(static_cast<float>(mouse->position.x), static_cast<float>(mouse->position.y));
+                    Vector2f mousePos=window.mapPixelToCoords(mouse->position);
 
                     if (page==0)
                     {
@@ -222,6 +292,19 @@ void runVisuals()
                             }
 
                             timeCounter.setString("DAY: "+to_string(currentDay)+"  HOUR: "+hourString);
+                        }
+                        else if (listButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=3;
+                            scrollOffset=0;
+                        }
+                    }
+                    else if (page==3)
+                    {
+                        if (listBackButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=0;
+                            scrollOffset=0;
                         }
                     }
                     else
@@ -403,6 +486,22 @@ void runVisuals()
                     }
                 }
             }
+
+            //Scroll patient list
+            if (const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
+            {
+                if (page==3)
+                {
+                    if (wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(patientList.size()))
+                    {
+                        scrollOffset++;
+                    }
+                    else if (wheel->delta>0 && scrollOffset>0)
+                    {
+                        scrollOffset--;
+                    }
+                }
+            }
         }
 
         //Highlight selected text box
@@ -424,10 +523,71 @@ void runVisuals()
             window.draw(timeButton);
             window.draw(timeButtonText);
             window.draw(timeCounter);
+            window.draw(listButton);
+            window.draw(listButtonText);
+        }
+        else if (page==3)//Drawing the patient list
+        {
+            window.draw(listTitle);
+            window.draw(nameHeader);
+            window.draw(dobHeader);
+            window.draw(ageHeader);
+            window.draw(conditionHeader);
+
+            for (int i=0;i<visibleRows;i++)
+            {
+                int index=scrollOffset+i;
+
+                if (index>=static_cast<int>(patientList.size()))
+                {
+                    break;
+                }
+
+                float y=185.f+i*54.f;
+
+                //Alternating row colors
+                listRow.setPosition({65.f, y});
+
+                if (i%2==0)
+                {
+                    listRow.setFillColor(Color(220, 220, 210));
+                }
+                else
+                {
+                    listRow.setFillColor(Color(195, 205, 205));
+                }
+
+                window.draw(listRow);
+
+                //Patient name
+                rowText.setString(patientList[index].name);
+                rowText.setPosition({80.f, y+12.f});
+                window.draw(rowText);
+
+                //Date of birth
+                rowText.setString(patientList[index].dob);
+                rowText.setPosition({345.f, y+12.f});
+                window.draw(rowText);
+
+                //Age
+                rowText.setString(to_string(patientList[index].age));
+                rowText.setPosition({555.f, y+12.f});
+                window.draw(rowText);
+
+                //Condition
+                rowText.setString(to_string(patientList[index].condition)+"/10");
+                rowText.setPosition({730.f, y+12.f});
+                window.draw(rowText);
+            }
+
+            window.draw(scrollInstructions);
+
+            //Patient list back button
+            window.draw(listBackButton);
+            window.draw(listBackText);
         }
         else//Drawing the patient or doctor record page
         {
-            
             if (page==1) 
             {
                 pageTitle.setString("PATIENT");
