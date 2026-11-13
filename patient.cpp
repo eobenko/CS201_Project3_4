@@ -10,6 +10,8 @@ Patient::Patient(std::string n, year y, month m, day d) : Person(n, y, m, d)
     condition = MIN_CONDITION;
 }
 
+Patient::Patient() : Patient("", 0, 1, 1) {}
+
 int Patient::getCondition()
 {
     return condition;

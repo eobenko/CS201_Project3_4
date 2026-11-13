@@ -6,11 +6,13 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include "hospital.h"
 
 using namespace std;
 using namespace sf;
 //Hospital &hospital
-void runVisuals()
+// void runVisuals()
+void runVisuals(Hospital &hospital)
 {
     //Create window
     RenderWindow window(VideoMode({1000, 650}), "Ronita Hospital", Style::Titlebar | Style::Close);

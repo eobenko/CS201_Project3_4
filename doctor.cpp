@@ -32,6 +32,8 @@ Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : 
     }
 }
 
+Doctor::Doctor() : Doctor("", 0, 1, 1, 0, 0, 0) {}
+
 int Doctor::skillLevel()
 {
     return skill;
