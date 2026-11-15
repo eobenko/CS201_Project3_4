@@ -35,42 +35,52 @@ void runVisuals(Hospital &hospital)
     //Main menu title
     Text title(font, "NOTA HOSPITAL", 48);
     title.setFillColor(Color::White);
-    title.setPosition({285.f, 110.f});
+    title.setPosition({285.f, 95.f});
 
-    //Main menu buttons
-    RectangleShape patientButton({300.f, 120.f});//Patient button
-    patientButton.setPosition({175.f, 300.f});
+    //Patient button
+    RectangleShape patientButton({250.f, 90.f});
+    patientButton.setPosition({75.f, 270.f});
     patientButton.setFillColor(buttonColor);
 
-    RectangleShape doctorButton({300.f, 120.f});//Doctor button
-    doctorButton.setPosition({525.f, 300.f});
+    Text patientText(font, "PATIENT", 28);
+    patientText.setFillColor(textColor);
+    patientText.setPosition({140.f, 295.f});
+
+    //Doctor button
+    RectangleShape doctorButton({250.f, 90.f});
+    doctorButton.setPosition({375.f, 270.f});
     doctorButton.setFillColor(buttonColor);
 
-    Text patientText(font, "PATIENT", 30);//Patient text
-    patientText.setFillColor(textColor);
-    patientText.setPosition({255.f, 340.f});
-
-    Text doctorText(font, "DOCTOR", 30);//Doctor text
+    Text doctorText(font, "DOCTOR", 28);
     doctorText.setFillColor(textColor);
-    doctorText.setPosition({615.f, 340.f});
- 
+    doctorText.setPosition({440.f, 295.f});
+
+    //Room lookup button
+    RectangleShape roomButton({250.f, 90.f});
+    roomButton.setPosition({675.f, 270.f});
+    roomButton.setFillColor(buttonColor);
+
+    Text roomButtonText(font, "ROOM LOOKUP", 24);
+    roomButtonText.setFillColor(textColor);
+    roomButtonText.setPosition({710.f, 297.f});
+
     //Advance time button
-    RectangleShape timeButton({300.f, 80.f});//Advance time button
-    timeButton.setPosition({350.f, 465.f});
+    RectangleShape timeButton({250.f, 90.f});
+    timeButton.setPosition({225.f, 420.f});
     timeButton.setFillColor(buttonColor);
 
-    Text timeButtonText(font, "ADVANCE TIME", 27);//Advance time button text
+    Text timeButtonText(font, "ADVANCE TIME", 24);
     timeButtonText.setFillColor(textColor);
-    timeButtonText.setPosition({387.f, 483.f});
+    timeButtonText.setPosition({265.f, 447.f});
 
     //Patient list button
-    RectangleShape listButton({300.f, 60.f});
-    listButton.setPosition({350.f, 565.f});
+    RectangleShape listButton({250.f, 90.f});
+    listButton.setPosition({525.f, 420.f});
     listButton.setFillColor(buttonColor);
 
-    Text listButtonText(font, "PATIENT LIST", 25);
+    Text listButtonText(font, "PATIENT LIST", 24);
     listButtonText.setFillColor(textColor);
-    listButtonText.setPosition({400.f, 578.f});
+    listButtonText.setPosition({575.f, 447.f});
 
     //Simulation time counter
     int currentHour=0;
@@ -152,7 +162,7 @@ void runVisuals(Hospital &hospital)
     searchText.setFillColor(textColor);
     searchText.setPosition({643.f, 547.f});
 
-    //0=main menu, 1=patient, 2=doctor, 3=patient list
+    //0=main menu, 1=patient, 2=doctor, 3=patient list, 4=room lookup
     int page=0;
 
 
@@ -244,6 +254,35 @@ void runVisuals(Hospital &hospital)
     //0=not searched, 1=found, 2=not found
     int resultStatus=0;
 
+    //Room lookup page
+    string roomInput="";
+    bool roomSelected=false;
+    bool roomSearched=false;
+
+    Text roomTitle(font, "ROOM LOOKUP", 45);
+    roomTitle.setFillColor(Color::White);
+    roomTitle.setPosition({330.f, 75.f});
+
+    Text roomLabel(font, "ROOM NUMBER", 24);
+    roomLabel.setFillColor(Color::White);
+    roomLabel.setPosition({60.f, 205.f});
+
+    RectangleShape roomBox({400.f, 65.f});
+    roomBox.setPosition({60.f, 245.f});
+    roomBox.setFillColor(buttonColor);
+
+    Text roomValue(font, "", 25);
+    roomValue.setFillColor(textColor);
+    roomValue.setPosition({75.f, 260.f});
+
+    //Room results panel
+    RectangleShape roomResultBox({430.f, 330.f});
+    roomResultBox.setPosition({510.f, 175.f});
+    roomResultBox.setFillColor(buttonColor);
+
+    Text roomResultText(font, "", 18);
+    roomResultText.setFillColor(textColor);
+    roomResultText.setPosition({535.f, 195.f});
 
     //Main loop
     while (window.isOpen()) 
@@ -300,6 +339,66 @@ void runVisuals(Hospital &hospital)
                         {
                             page=3;
                             scrollOffset=0;
+                        }
+                        else if (roomButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=4;
+                            roomInput="";
+                            roomValue.setString("");
+                            roomSelected=false;
+                            roomSearched=false;
+                        }
+                    }
+                    else if (page==4)
+                    {
+                        if (backButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=0;
+                            roomInput="";
+                            roomValue.setString("");
+                            roomSelected=false;
+                            roomSearched=false;
+                        }
+                        else if (roomBox.getGlobalBounds().contains(mousePos))
+                        {
+                            roomSelected=true;
+                        }
+                        else if (searchButton.getGlobalBounds().contains(mousePos))
+                        {
+                            roomSelected=false;
+                            roomSearched=true;
+
+                            //TODO: Replace demo with hospital room lookup
+                            //TODO: Retrieve patient and doctor assigned to this room
+
+                            if (roomInput=="101")
+                            {
+                                roomResultText.setString(
+                                    "ROOM 101 - FOUND (DEMO)\n\n"
+                                    "PATIENT\n"
+                                    "Name: Alex Morgan\n"
+                                    "DOB: 05/12/1990\n"
+                                    "Age: 36\n"
+                                    "Condition: 6/10\n\n"
+                                    "DOCTOR\n"
+                                    "Name: Taylor Smith\n"
+                                    "DOB: 01/14/1980\n"
+                                    "Age: 46\n"
+                                    "Skill: 8/10\n"
+                                    "Shift: 08:00 - 16:00"
+                                );
+                            }
+                            else
+                            {
+                                roomResultText.setString(
+                                    "ROOM NOT FOUND (DEMO)\n\n"
+                                    "No matching room information."
+                                );
+                            }
+                        }
+                        else
+                        {
+                            roomSelected=false;
                         }
                     }
                     else if (page==3)
@@ -490,6 +589,28 @@ void runVisuals(Hospital &hospital)
                 }
             }
 
+            //Room number keyboard input
+            if (const auto* text=event->getIf<Event::TextEntered>())
+            {
+                if (page==4 && roomSelected)
+                {
+                    if (text->unicode==8)
+                    {
+                        if (!roomInput.empty())
+                        {
+                            roomInput.pop_back();
+                        }
+                    }
+                    else if (text->unicode>=48 && text->unicode<=57 && roomInput.size()<5)
+                    {
+                        roomInput+=static_cast<char>(text->unicode);
+                    }
+
+                    roomValue.setString(roomInput);
+                    roomSearched=false;
+                }
+            }
+
             //Scroll patient list
             if (const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
             {
@@ -528,6 +649,28 @@ void runVisuals(Hospital &hospital)
             window.draw(timeCounter);
             window.draw(listButton);
             window.draw(listButtonText);
+            window.draw(roomButton);
+            window.draw(roomButtonText);
+        }
+        else if (page==4)//Drawing the room lookup page
+        {
+            roomBox.setFillColor(roomSelected ? selectedColor : buttonColor);
+
+            window.draw(roomTitle);
+            window.draw(roomLabel);
+            window.draw(roomBox);
+            window.draw(roomValue);
+
+            if (roomSearched)
+            {
+                window.draw(roomResultBox);
+                window.draw(roomResultText);
+            }
+
+            window.draw(backButton);
+            window.draw(backText);
+            window.draw(searchButton);
+            window.draw(searchText);
         }
         else if (page==3)//Drawing the patient list
         {
