@@ -39,7 +39,6 @@ void Hospital::populateDoctors()
     }
 }
 
-/*
 int Hospital::normalDistribution(mt19937 &gen, int min, int max)
 {
     if (min >= max)
@@ -59,7 +58,7 @@ int Hospital::normalDistribution(mt19937 &gen, int min, int max)
 
     return result;
 }
-*/
+
 void Hospital::findActiveDoctors()
 {
     activeDoctors.clear();
@@ -85,7 +84,7 @@ void Hospital::findRandomPatients()
 {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> patientDist(0, 5);
+    uniform_int_distribution<int> patientDist(1, 10);
     uniform_int_distribution<int> conditionDist(Patient::MIN_CONDITION, Patient::MAX_CONDITION);
 
     for (int i = 0; i < patientDist(gen); i++)
@@ -110,7 +109,7 @@ Hospital::Hospital() : people("people.txt")
     patientQueue = std::priority_queue<Patient>();
     patients = BTree<Patient, B_PATIENTS>();
     doctors = BTree<Doctor, B_DOCTORS>();
-    current_time = hours(0);
+    currentTime = hours(0);
 
     populateDoctors();
     findActiveDoctors();
@@ -128,15 +127,17 @@ Patient Hospital::pop()
     return p;
 }
 
-void Hospital::incrementTime()
+hours Hospital::incrementTime()
 {
-    current_time++;
+    currentTime++;
 
-    if (current_time == hours(24))
+    if (currentTime == hours(24))
     {
-        current_time = hours(0);
+        currentTime = hours(0);
     }
 
     findActiveDoctors();
     findRandomPatients();
+
+    return currentTime;
 }
