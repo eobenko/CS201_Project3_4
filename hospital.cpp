@@ -9,7 +9,6 @@ void Hospital::populateDoctors()
     int day;
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> skillDist(Doctor::MIN_SKILL, Doctor::MAX_SKILL);
     uniform_int_distribution<int> shiftStartDist(0, 23);
     uniform_int_distribution<int> shiftEndDist(0, 23);
     int skill;
@@ -24,7 +23,7 @@ void Hospital::populateDoctors()
         {
             break;
         }
-        skill = skillDist(gen);
+        skill = normalDistribution(gen, Doctor::MIN_SKILL, Doctor::MAX_SKILL);
         shiftStart = shiftStartDist(gen);
         shiftEnd = shiftEndDist(gen);
 
@@ -61,7 +60,7 @@ int Hospital::normalDistribution(mt19937 &gen, int min, int max)
 
 void Hospital::findActiveDoctors()
 {
-    activeDoctors.clear();
+    activeDoctors = priority_queue<Doctor>();
     traverse(doctors.root);
 }
 
@@ -72,12 +71,27 @@ void Hospital::traverse(BTreeNode<Doctor, B_DOCTORS> *x)
     {
         if (!x->leaf)
             traverse(x->children[i]);
-        if (x->keys[i].isOnShift(current_time))
-            activeDoctors.push_back(x->keys[i]);
+        if (x->keys[i].isOnShift(currentTime))
+            activeDoctors.push(x->keys[i]);
     }
 
     if (!x->leaf)
         traverse(x->children[i]);
+}
+
+Doctor Hospital::findDoctor(BTreeNode<Doctor, B_DOCTORS> *x, string name)
+{
+    int i = 0;
+    while (i < x->n && name > x->keys[i].getName())
+        i++;
+
+    if (i < x->n && name == x->keys[i].getName())
+        return x->keys[i];
+
+    if (x->leaf)
+        return Doctor();
+
+    return findDoctor(x->children[i], name);
 }
 
 void Hospital::findRandomPatients()
@@ -99,7 +113,7 @@ void Hospital::findRandomPatients()
             Patient patient(firstName + " " + lastName, year, month, day);
             patients.insert(patient);
             patient.setCondition(conditionDist(gen));
-            push(patient);
+            patientQueue.push(patient);
         }
     }
 }
@@ -107,17 +121,14 @@ void Hospital::findRandomPatients()
 Hospital::Hospital() : people("people.txt")
 {
     patientQueue = std::priority_queue<Patient>();
+    activeDoctors = std::priority_queue<Doctor>();
     patients = BTree<Patient, B_PATIENTS>();
     doctors = BTree<Doctor, B_DOCTORS>();
+    rooms = vector<Room>();
     currentTime = hours(0);
 
     populateDoctors();
     findActiveDoctors();
-}
-
-void Hospital::push(Patient p)
-{
-    patientQueue.push(p);
 }
 
 Patient Hospital::pop()
@@ -125,6 +136,26 @@ Patient Hospital::pop()
     Patient p = patientQueue.top();
     patientQueue.pop();
     return p;
+}
+
+Doctor Hospital::popDoctor()
+{
+    Doctor d = activeDoctors.top();
+    activeDoctors.pop();
+    return d;
+}
+
+void Hospital::populateRooms()
+{
+    rooms.clear();
+
+    while (activeDoctors.size() > 0 && patientQueue.size() > 0)
+    {
+        Doctor d = popDoctor();
+        Patient p = pop();
+        Room room(rooms.size() * 18, d, p);
+        rooms.push_back(room);
+    }
 }
 
 hours Hospital::incrementTime()
@@ -138,6 +169,51 @@ hours Hospital::incrementTime()
 
     findActiveDoctors();
     findRandomPatients();
+    populateRooms();
 
     return currentTime;
+}
+
+Room Hospital::getRoom(int roomNumber)
+{
+    for (Room room : rooms)
+    {
+        if (room.roomNumber == roomNumber)
+        {
+            return room;
+        }
+    }
+
+    return Room(-1, Doctor(), Patient());
+}
+
+Room Hospital::getRoomViaPatient(string name)
+{
+    for (Room room : rooms)
+    {
+        if (room.assignedPatient.getName() == name)
+        {
+            return room;
+        }
+    }
+
+    return Room(-1, Doctor(), Patient());
+}
+
+Room Hospital::getRoomViaDoctor(string name)
+{
+    for (Room room : rooms)
+    {
+        if (room.assignedDoctor.getName() == name)
+        {
+            return room;
+        }
+    }
+
+    return Room(-1, Doctor(), Patient());
+}
+
+Doctor Hospital::getDoctor(string name)
+{
+    return findDoctor(doctors.root, name);
 }

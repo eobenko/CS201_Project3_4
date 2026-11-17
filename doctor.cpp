@@ -34,12 +34,12 @@ Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : 
 
 Doctor::Doctor() : Doctor("", 0, 1, 1, 0, 0, 0) {}
 
-int Doctor::skillLevel()
+int Doctor::skillLevel() const
 {
     return skill;
 }
 
-bool Doctor::isOnShift(hours current_time)
+bool Doctor::isOnShift(hours current_time) const
 {
     if (shiftStart <= shiftEnd)
     {
@@ -51,12 +51,12 @@ bool Doctor::isOnShift(hours current_time)
     }
 }
 
-hours Doctor::shiftStartTime()
+hours Doctor::shiftStartTime() const
 {
     return shiftStart;
 }
 
-hours Doctor::shiftEndTime()
+hours Doctor::shiftEndTime() const
 {
     return shiftEnd;
 }
