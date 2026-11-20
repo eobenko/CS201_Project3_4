@@ -26,3 +26,14 @@ void Patient::setCondition(int c)
     else
         condition = c;
 }
+
+bool Patient::heal(int amount)
+{
+    condition -= amount;
+    if (condition <= MIN_CONDITION)
+    {
+        condition = MIN_CONDITION;
+        return true;
+    }
+    return false;
+}

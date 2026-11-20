@@ -43,12 +43,13 @@ private:
     Patient pop();
     Doctor popDoctor();
     void populateRooms();
+    void healPatients();
 
 public:
     Hospital();
     hours incrementTime();
     Room getRoom(int roomNumber);
-    Room getRoomViaPatient(string name); 
-    Room getRoomViaDoctor(string name);  
-    Doctor getDoctor(string name);       // Search the b-tree for the doctor
+    Room getRoomViaPatient(string name);
+    Room getRoomViaDoctor(string name);
+    Doctor getDoctor(string name); // Search the b-tree for the doctor
 };

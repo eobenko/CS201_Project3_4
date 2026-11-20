@@ -158,8 +158,20 @@ void Hospital::populateRooms()
     }
 }
 
+void Hospital::healPatients()
+{
+    for (Room &room : rooms)
+    {
+        if (!room.assignedPatient.heal(room.assignedDoctor.skillLevel()))
+        {
+            patientQueue.push(room.assignedPatient);
+        }
+    }
+}
+
 hours Hospital::incrementTime()
 {
+    healPatients();
     currentTime++;
 
     if (currentTime == hours(24))
