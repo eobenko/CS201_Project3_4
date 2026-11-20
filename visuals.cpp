@@ -80,12 +80,12 @@ void runVisuals(Hospital &hospital)
     timeButtonText.setFillColor(textColor);
     timeButtonText.setPosition({265.f, 447.f});
 
-    //Room list button
+    //Patient list button
     RectangleShape listButton({250.f, 90.f});
     listButton.setPosition({525.f, 420.f});
     listButton.setFillColor(buttonColor);
 
-    Text listButtonText(font, "ROOM LIST", 24);//Room list button text
+    Text listButtonText(font, "PATIENT LIST", 24);//Patient list button text
     listButtonText.setFillColor(textColor);
     listButtonText.setPosition({575.f, 447.f});
 
@@ -149,7 +149,7 @@ void runVisuals(Hospital &hospital)
     backText.setFillColor(textColor);
     backText.setPosition({253.f, 547.f});
 
-    //Room list back button
+    //Patient list back button
     RectangleShape listBackButton({170.f, 60.f});
     listBackButton.setPosition({415.f, 560.f});
     listBackButton.setFillColor(buttonColor);
@@ -167,13 +167,13 @@ void runVisuals(Hospital &hospital)
     searchText.setFillColor(textColor);
     searchText.setPosition({643.f, 547.f});
 
-    //0=main menu, 1=patient, 2=doctor, 3=room list, 4=room lookup
+    //0=main menu, 1=patient, 2=doctor, 3=patient list, 4=room lookup
     int page=0;
 
 
 
-    //Temporary room information
-    struct RoomRow
+    //Temporary patient information
+    struct PatientRow
     {
         int roomNumber;
         string patientName;
@@ -184,11 +184,11 @@ void runVisuals(Hospital &hospital)
         int age;
     };
 
-    //Room list populated from occupied rooms
-    vector<RoomRow> roomList;
-    auto refreshRooms=[&]()//clears the room list and repopulates it with the current occupied rooms
+    //Patient list populated from occupied rooms
+    vector<PatientRow> patientList;
+    auto refreshPatients=[&]()//clears the patient list and repopulates it with the current occupied rooms
     {
-        roomList.clear();
+        patientList.clear();
 
         for(int number=0;number<10000;number+=18)//Iterate through all possible room numbers, but only the ones that are multiples of 18
         {
@@ -207,49 +207,49 @@ void runVisuals(Hospital &hospital)
 
             string dobText=to_string(unsigned(dob.month()))+"/"+to_string(unsigned(dob.day()))+"/"+to_string(int(dob.year()));
             string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+to_string(unsigned(doctorDob.day()))+"/"+to_string(int(doctorDob.year()));
-            roomList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), doctorDobText, dobText, static_cast<int>(patient.getAge().count())});
+            patientList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), doctorDobText, dobText, static_cast<int>(patient.getAge().count())});
         }
     };
 
-    refreshRooms();
+    refreshPatients();
 
     //Scrolling information
     int scrollOffset=0;
     const int visibleRows=6;
 
-    //Room list title
-    Text listTitle(font, "ROOM LIST", 42);
+    //Patient list title
+    Text listTitle(font, "PATIENT LIST", 42);
     listTitle.setFillColor(Color::White);
     listTitle.setPosition({340.f, 55.f});
 
     //Table headers
-    Text roomHeader(font, "ROOM", 15);
+    Text roomHeader(font, "ROOM", 15);//Room header
     roomHeader.setFillColor(Color::White);
     roomHeader.setPosition({24.f,140.f});
 
-    Text nameHeader(font, "PATIENT", 15);//Patient name header
+    Text nameHeader(font, "PATIENT", 15);//Patient header
     nameHeader.setFillColor(Color::White);
     nameHeader.setPosition({95.f,140.f});
 
-    Text conditionHeader(font, "CONDITION", 15);//Patient condition header
+    Text conditionHeader(font, "CONDITION", 15);//Condition header
     conditionHeader.setFillColor(Color::White);
     conditionHeader.setPosition({275.f,140.f});
 
-    Text doctorHeader(font, "DOCTOR", 15);//Doctor name header
-    doctorHeader.setFillColor(Color::White);
-    doctorHeader.setPosition({380.f,140.f});
-
-    Text doctorDobHeader(font, "DOCTOR DOB", 15);//Doctor date of birth header
-    doctorDobHeader.setFillColor(Color::White);
-    doctorDobHeader.setPosition({555.f,140.f});
-
-    Text dobHeader(font, "PATIENT DOB", 15);//Patient date of birth header
+    Text dobHeader(font, "PATIENT DOB", 15);//Patient DOB header
     dobHeader.setFillColor(Color::White);
-    dobHeader.setPosition({695.f,140.f});
+    dobHeader.setPosition({380.f,140.f});
 
     Text ageHeader(font, "PATIENT AGE", 15);//Patient age header
     ageHeader.setFillColor(Color::White);
-    ageHeader.setPosition({850.f,140.f});
+    ageHeader.setPosition({525.f,140.f});
+
+    Text doctorHeader(font, "DOCTOR", 15);//Doctor header
+    doctorHeader.setFillColor(Color::White);
+    doctorHeader.setPosition({655.f,140.f});
+
+    Text doctorDobHeader(font, "DOCTOR DOB", 15);//Doctor DOB header
+    doctorDobHeader.setFillColor(Color::White);
+    doctorDobHeader.setPosition({830.f,140.f});
 
     //Reusable room row
     RectangleShape listRow({960.f, 48.f});
@@ -374,9 +374,9 @@ void runVisuals(Hospital &hospital)
 
                             timeCounter.setString("  HOUR: "+hourString);
                         }
-                        else if(listButton.getGlobalBounds().contains(mousePos))//List rooms button clicked
+                        else if(listButton.getGlobalBounds().contains(mousePos))//Patient list button clicked
                         {
-                            refreshRooms();
+                            refreshPatients();
                             page=3;
                             scrollOffset=0;
                         }
@@ -389,7 +389,7 @@ void runVisuals(Hospital &hospital)
                             roomSearched=false;
                         }
                     }
-                    else if(page==3)//Room list page
+                    else if(page==3)//Patient list page
                     {
                         if(listBackButton.getGlobalBounds().contains(mousePos))
                         {
@@ -682,12 +682,12 @@ void runVisuals(Hospital &hospital)
                 }
             }
 
-            //Scroll room list
+            //Scroll patient list
             if(const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
             {
-                if(page==3)//Room list page
+                if(page==3)//Patient list page
                 {
-                    if(wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(roomList.size()))//Scroll down, but only if there are more rows to show, this was was easier than I expected
+                    if(wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(patientList.size()))//Scroll down, but only if there are more rows to show, this was was easier than I expected
                     {
                         scrollOffset++;
                     }
@@ -742,22 +742,22 @@ void runVisuals(Hospital &hospital)
             window.draw(searchButton);
             window.draw(searchText);
         }
-        else if(page==3)//Drawing the room list
+        else if(page==3)//Drawing the patient list
         {
             window.draw(listTitle);
             window.draw(roomHeader);
             window.draw(nameHeader);
             window.draw(conditionHeader);
-            window.draw(doctorHeader);
-            window.draw(doctorDobHeader);
             window.draw(dobHeader);
             window.draw(ageHeader);
+            window.draw(doctorHeader);
+            window.draw(doctorDobHeader);
 
-            for(int i=0;i<visibleRows;i++)//Draw each visible row of the room list
+            for(int i=0;i<visibleRows;i++)//Draw each visible row of the patient list
             {
                 int index=scrollOffset+i;
 
-                if(index>=static_cast<int>(roomList.size()))
+                if(index>=static_cast<int>(patientList.size()))
                 {
                     break;
                 }
@@ -777,39 +777,40 @@ void runVisuals(Hospital &hospital)
 
                 window.draw(listRow);
 
+                
                 //Room number
-                rowText.setString(to_string(roomList[index].roomNumber));
+                rowText.setString(to_string(patientList[index].roomNumber));
                 rowText.setPosition({24.f,y+12.f});
                 window.draw(rowText);
 
                 //Patient
-                rowText.setString(roomList[index].patientName);
+                rowText.setString(patientList[index].patientName);
                 rowText.setPosition({95.f,y+12.f});
                 window.draw(rowText);
 
                 //Condition
-                rowText.setString(to_string(roomList[index].condition)+"/10");
+                rowText.setString(to_string(patientList[index].condition)+"/10");
                 rowText.setPosition({275.f,y+12.f});
                 window.draw(rowText);
 
-                //Doctor
-                rowText.setString(roomList[index].doctorName);
+                //Patient DOB
+                rowText.setString(patientList[index].dob);
                 rowText.setPosition({380.f,y+12.f});
                 window.draw(rowText);
 
-                //Doctor DOB
-                rowText.setString(roomList[index].doctorDob);
-                rowText.setPosition({555.f,y+12.f});
-                window.draw(rowText);
-
-                //Patient DOB
-                rowText.setString(roomList[index].dob);
-                rowText.setPosition({695.f,y+12.f});
-                window.draw(rowText);
-
                 //Patient age
-                rowText.setString(to_string(roomList[index].age));
-                rowText.setPosition({850.f,y+12.f});
+                rowText.setString(to_string(patientList[index].age));
+                rowText.setPosition({525.f,y+12.f});
+                window.draw(rowText);
+
+                //Doctor
+                rowText.setString(patientList[index].doctorName);
+                rowText.setPosition({655.f,y+12.f});
+                window.draw(rowText);
+
+                //Doctor DOB
+                rowText.setString(patientList[index].doctorDob);
+                rowText.setPosition({830.f,y+12.f});
                 window.draw(rowText);
             }
 
