@@ -3,19 +3,17 @@
 FILES = doctor.cpp hospital.cpp main.cpp patient.cpp person.cpp randomizer.cpp visuals.cpp 
 BINARY_NAME = main.out
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system
-COMPILE_FLAGS = -o $(BINARY_NAME) -std=c++20 $(SFML_FLAGS)
+COMPILE_FLAGS = -o $(BINARY_NAME) -std=c++20
 DEBUG_COMPILE_FLAGS = -g -O0
 COMPILER = g++
 
 .PHONY: build build_debug run clean test_visuals compile_visuals run_visuals clean_visuals
 
-# Create the binary
 build: $(FILES)
-	$(COMPILER) $(COMPILE_FLAGS) $(FILES)
+	$(COMPILER) $(COMPILE_FLAGS) $(FILES) $(SFML_FLAGS)
 
-# Create the binary with debug symbols that gdb can interpret
 build_debug: $(FILES)
-	$(COMPILER) $(DEBUG_COMPILE_FLAGS) $(COMPILE_FLAGS) $(FILES)
+	$(COMPILER) $(DEBUG_COMPILE_FLAGS) $(COMPILE_FLAGS) $(FILES) $(SFML_FLAGS)
 
 # Run the compiled binary
 run:

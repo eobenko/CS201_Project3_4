@@ -48,15 +48,16 @@ std::chrono::year_month_day getRandomDob() {
             d = randomDate28(gen);
         }
     }
+    return year_month_day{std::chrono::year{y},std::chrono::month{static_cast<unsigned>(m)},std::chrono::day{static_cast<unsigned>(d)}};
 }
 
-Patient& randomPatient() {
+Patient randomPatient() {
     year_month_day t = getRandomDob();
     Patient p(getRandomName(), t.year(), t.month(), t.day());
     return p;
 }
 
-Doctor& randomDoctor() {
+Doctor randomDoctor() {
     year_month_day t = getRandomDob();
     Doctor d(getRandomName(), t.year(), t.month(), t.day(), getRandomSkillLevel(), hours(9), hours(17));
     return d;
