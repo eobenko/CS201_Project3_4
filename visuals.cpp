@@ -9,7 +9,6 @@
 #include "hospital.h"
 
 /*
-    Increment 8 times before running system to get patients in
     Change patient list to be room list that has patient and doctors in them
     Connect to Ronin's work
 */
@@ -25,6 +24,12 @@ using namespace sf;
 // void runVisuals()
 void runVisuals(Hospital &hospital)
 {
+    //Advance simulation to hour 8 before opening the window, but does it in a way that allows us to see scroll feature
+    for (int i=0;i<200;i++)
+    {
+        hospital.incrementTime();
+    }
+
     //Create window
     RenderWindow window(VideoMode({1000, 650}), "Ronita Hospital", Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
@@ -84,18 +89,18 @@ void runVisuals(Hospital &hospital)
     timeButtonText.setFillColor(textColor);
     timeButtonText.setPosition({265.f, 447.f});
 
-    //Patient list button
+    //Room list button
     RectangleShape listButton({250.f, 90.f});
     listButton.setPosition({525.f, 420.f});
     listButton.setFillColor(buttonColor);
 
-    Text listButtonText(font, "PATIENT LIST", 24);
+    Text listButtonText(font, "ROOM LIST", 24);
     listButtonText.setFillColor(textColor);
     listButtonText.setPosition({575.f, 447.f});
 
     //Simulation time counter
-    int currentHour=0;
-    int currentDay=1;
+    int currentHour=8;
+    //int currentDay=1;
 
     Text timeCounter(font, "  HOUR: " + to_string(currentHour), 20);
     timeCounter.setFillColor(Color::White);
@@ -155,7 +160,7 @@ void runVisuals(Hospital &hospital)
     backText.setFillColor(textColor);
     backText.setPosition({253.f, 547.f});
 
-    //Patient list back button
+    //Room list back button
     RectangleShape listBackButton({170.f, 60.f});
     listBackButton.setPosition({415.f, 560.f});
     listBackButton.setFillColor(buttonColor);
@@ -173,51 +178,88 @@ void runVisuals(Hospital &hospital)
     searchText.setFillColor(textColor);
     searchText.setPosition({643.f, 547.f});
 
-    //0=main menu, 1=patient, 2=doctor, 3=patient list, 4=room lookup
+    //0=main menu, 1=patient, 2=doctor, 3=room list, 4=room lookup
     int page=0;
 
 
-    //Temporary patient information
-    struct PatientRow
+    //Temporary room information
+    struct RoomRow
     {
-        string name;
+        int roomNumber;
+        string patientName;
+        int condition;
+        string doctorName;
         string dob;
         int age;
-        int condition;
     };
 
-    //TEST PURPOSES ONLY
-    vector<PatientRow> patientList={{"Alex Morgan", "05/12/1990", 36, 6}, {"Jordan Lee", "08/23/1985", 41, 9}, {"Taylor Smith", "01/14/2000", 26, 2}, {"Casey Brown", "07/03/1977", 49, 8}, {"Morgan Davis", "11/29/1998", 27, 4}, {"Jamie Wilson", "03/17/1965", 61, 7}, {"Riley Clark", "09/08/2003", 23, 1}, {"Avery Hall", "02/25/1994", 32, 10}, {"Cameron Jones", "10/10/1970", 56, 5}};
+    //Room list populated from occupied rooms
+    vector<RoomRow> roomList;
+
+    auto refreshRooms=[&]()
+    {
+        roomList.clear();
+
+        for (int number=0;number<10000;number+=18)
+        {
+            Room room=hospital.getRoom(number);
+
+            if (room.roomNumber==-1)
+            {
+                break;
+            }
+
+            Patient patient=room.assignedPatient;
+            Doctor doctor=room.assignedDoctor;
+            auto dob=patient.getDob();
+
+            string dobText=to_string(unsigned(dob.month()))+"/"+
+                        to_string(unsigned(dob.day()))+"/"+
+                        to_string(int(dob.year()));
+
+            roomList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), dobText, static_cast<int>(patient.getAge().count())});
+        }
+    };
+
+    refreshRooms();
 
     //Scrolling information
     int scrollOffset=0;
     const int visibleRows=6;
 
-    //Patient list title
-    Text listTitle(font, "PATIENT LIST", 42);
+    //Room list title
+    Text listTitle(font, "ROOM LIST", 42);
     listTitle.setFillColor(Color::White);
     listTitle.setPosition({340.f, 55.f});
 
     //Table headers
-    Text nameHeader(font, "NAME", 21);
+    Text roomHeader(font, "ROOM", 17);
+    roomHeader.setFillColor(Color::White);
+    roomHeader.setPosition({75.f, 140.f});
+
+    Text nameHeader(font, "PATIENT", 17);
     nameHeader.setFillColor(Color::White);
-    nameHeader.setPosition({80.f, 140.f});
+    nameHeader.setPosition({155.f, 140.f});
 
-    Text dobHeader(font, "DOB", 21);
-    dobHeader.setFillColor(Color::White);
-    dobHeader.setPosition({345.f, 140.f});
-
-    Text ageHeader(font, "AGE", 21);
-    ageHeader.setFillColor(Color::White);
-    ageHeader.setPosition({555.f, 140.f});
-
-    Text conditionHeader(font, "CONDITION", 21);
+    Text conditionHeader(font, "CONDITION", 17);
     conditionHeader.setFillColor(Color::White);
-    conditionHeader.setPosition({730.f, 140.f});
+    conditionHeader.setPosition({350.f, 140.f});
 
-    //Reusable patient row
+    Text doctorHeader(font, "DOCTOR", 17);
+    doctorHeader.setFillColor(Color::White);
+    doctorHeader.setPosition({470.f, 140.f});
+
+    Text dobHeader(font, "PATIENT DOB", 17);
+    dobHeader.setFillColor(Color::White);
+    dobHeader.setPosition({680.f, 140.f});
+
+    Text ageHeader(font, "AGE", 17);
+    ageHeader.setFillColor(Color::White);
+    ageHeader.setPosition({860.f, 140.f});
+
+    //Reusable room row
     RectangleShape listRow({850.f, 48.f});
-    Text rowText(font, "", 18);
+    Text rowText(font, "", 15);
     rowText.setFillColor(textColor);
 
     //Scroll instructions
@@ -325,15 +367,8 @@ void runVisuals(Hospital &hospital)
                         }
                         else if (timeButton.getGlobalBounds().contains(mousePos))
                         {
-                            //TODO: Replace with hospital.incrementTime() once integrated
-
-                            //Temporary simulation time logic
-                            currentHour++;
-
-                            if (currentHour==24)
-                            {
-                                currentHour=0;
-                            }
+                            //Advance the actual hospital simulation
+                            currentHour=static_cast<int>(hospital.incrementTime().count());
 
                             //Update displayed counter
                             string hourString=to_string(currentHour);
@@ -347,6 +382,7 @@ void runVisuals(Hospital &hospital)
                         }
                         else if (listButton.getGlobalBounds().contains(mousePos))
                         {
+                            refreshRooms();
                             page=3;
                             scrollOffset=0;
                         }
@@ -378,32 +414,36 @@ void runVisuals(Hospital &hospital)
                             roomSelected=false;
                             roomSearched=true;
 
-                            //TODO: Replace demo with hospital room lookup
-                            //TODO: Retrieve patient and doctor assigned to this room
-
-                            if (roomInput=="101")
+                            if (roomInput.empty())
                             {
-                                roomResultText.setString(
-                                    "ROOM 101 - FOUND (DEMO)\n\n"
-                                    "PATIENT\n"
-                                    "Name: Alex Morgan\n"
-                                    "DOB: 05/12/1990\n"
-                                    "Age: 36\n"
-                                    "Condition: 6/10\n\n"
-                                    "DOCTOR\n"
-                                    "Name: Taylor Smith\n"
-                                    "DOB: 01/14/1980\n"
-                                    "Age: 46\n"
-                                    "Skill: 8/10\n"
-                                    "Shift: 08:00 - 16:00"
-                                );
+                                roomResultText.setString("Please enter a room number.");
                             }
                             else
                             {
-                                roomResultText.setString(
-                                    "ROOM NOT FOUND (DEMO)\n\n"
-                                    "No matching room information."
-                                );
+                                int number=stoi(roomInput);
+                                Room room=hospital.getRoom(number);
+
+                                if (room.roomNumber==-1)
+                                {
+                                    roomResultText.setString("Room not found.");
+                                }
+                                else
+                                {
+                                    Patient patient=room.assignedPatient;
+                                    Doctor doctor=room.assignedDoctor;
+
+                                    roomResultText.setString(
+                                        "ROOM: "+to_string(number)+"\n\n"
+                                        "PATIENT\n"
+                                        "Name: "+patient.getName()+"\n"
+                                        "Condition: "+to_string(patient.getCondition())+"/10\n\n"
+                                        "DOCTOR\n"
+                                        "Name: "+doctor.getName()+"\n"
+                                        "Skill: "+to_string(doctor.skillLevel())+"/10\n"
+                                        "Shift: "+to_string(doctor.shiftStartTime().count())+
+                                        ":00 - "+to_string(doctor.shiftEndTime().count())+":00"
+                                    );
+                                }
                             }
                         }
                         else
@@ -621,12 +661,12 @@ void runVisuals(Hospital &hospital)
                 }
             }
 
-            //Scroll patient list
+            //Scroll room list
             if (const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
             {
                 if (page==3)
                 {
-                    if (wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(patientList.size()))
+                    if (wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(roomList.size()))
                     {
                         scrollOffset++;
                     }
@@ -682,19 +722,21 @@ void runVisuals(Hospital &hospital)
             window.draw(searchButton);
             window.draw(searchText);
         }
-        else if (page==3)//Drawing the patient list
+        else if (page==3)//Drawing the room list
         {
             window.draw(listTitle);
+            window.draw(roomHeader);
             window.draw(nameHeader);
+            window.draw(conditionHeader);
+            window.draw(doctorHeader);
             window.draw(dobHeader);
             window.draw(ageHeader);
-            window.draw(conditionHeader);
 
             for (int i=0;i<visibleRows;i++)
             {
                 int index=scrollOffset+i;
 
-                if (index>=static_cast<int>(patientList.size()))
+                if (index>=static_cast<int>(roomList.size()))
                 {
                     break;
                 }
@@ -702,43 +744,51 @@ void runVisuals(Hospital &hospital)
                 float y=185.f+i*54.f;
 
                 //Alternating row colors
-                listRow.setPosition({65.f, y});
+                listRow.setPosition({65.f,y});
 
                 if (i%2==0)
                 {
-                    listRow.setFillColor(Color(220, 220, 210));
+                    listRow.setFillColor(Color(220,220,210));
                 }
                 else
                 {
-                    listRow.setFillColor(Color(195, 205, 205));
+                    listRow.setFillColor(Color(195,205,205));
                 }
 
                 window.draw(listRow);
 
+                //Room number
+                rowText.setString(to_string(roomList[index].roomNumber));
+                rowText.setPosition({75.f,y+12.f});
+                window.draw(rowText);
+
                 //Patient name
-                rowText.setString(patientList[index].name);
-                rowText.setPosition({80.f, y+12.f});
-                window.draw(rowText);
-
-                //Date of birth
-                rowText.setString(patientList[index].dob);
-                rowText.setPosition({345.f, y+12.f});
-                window.draw(rowText);
-
-                //Age
-                rowText.setString(to_string(patientList[index].age));
-                rowText.setPosition({555.f, y+12.f});
+                rowText.setString(roomList[index].patientName);
+                rowText.setPosition({155.f,y+12.f});
                 window.draw(rowText);
 
                 //Condition
-                rowText.setString(to_string(patientList[index].condition)+"/10");
-                rowText.setPosition({730.f, y+12.f});
+                rowText.setString(to_string(roomList[index].condition)+"/10");
+                rowText.setPosition({350.f,y+12.f});
+                window.draw(rowText);
+
+                //Doctor name
+                rowText.setString(roomList[index].doctorName);
+                rowText.setPosition({470.f,y+12.f});
+                window.draw(rowText);
+
+                //Patient DOB
+                rowText.setString(roomList[index].dob);
+                rowText.setPosition({680.f,y+12.f});
+                window.draw(rowText);
+
+                //Patient age
+                rowText.setString(to_string(roomList[index].age));
+                rowText.setPosition({860.f,y+12.f});
                 window.draw(rowText);
             }
 
             window.draw(scrollInstructions);
-
-            //Patient list back button
             window.draw(listBackButton);
             window.draw(listBackText);
         }

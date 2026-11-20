@@ -98,7 +98,7 @@ void Hospital::findRandomPatients()
 {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> patientDist(1, 10);
+    uniform_int_distribution<int> patientDist(20, 40);
     uniform_int_distribution<int> conditionDist(Patient::MIN_CONDITION, Patient::MAX_CONDITION);
 
     for (int i = 0; i < patientDist(gen); i++)
