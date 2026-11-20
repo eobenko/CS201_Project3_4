@@ -8,6 +8,17 @@
 #include <vector>
 #include "hospital.h"
 
+/*
+    Increment 8 times before running system to get patients in
+    Change patient list to be room list that has patient and doctors in them
+    Connect to Ronin's work
+*/
+
+
+
+
+
+
 using namespace std;
 using namespace sf;
 //Hospital &hospital
@@ -86,7 +97,7 @@ void runVisuals(Hospital &hospital)
     int currentHour=0;
     int currentDay=1;
 
-    Text timeCounter(font, "DAY: " + to_string(currentDay) + "  HOUR: " + to_string(currentHour), 20);
+    Text timeCounter(font, "  HOUR: " + to_string(currentHour), 20);
     timeCounter.setFillColor(Color::White);
     timeCounter.setPosition({770.f, 20.f});
 
@@ -322,7 +333,6 @@ void runVisuals(Hospital &hospital)
                             if (currentHour==24)
                             {
                                 currentHour=0;
-                                currentDay++;
                             }
 
                             //Update displayed counter
@@ -333,7 +343,7 @@ void runVisuals(Hospital &hospital)
                                 hourString="0"+hourString;
                             }
 
-                            timeCounter.setString("DAY: "+to_string(currentDay)+"  HOUR: "+hourString);
+                            timeCounter.setString("  HOUR: "+hourString);
                         }
                         else if (listButton.getGlobalBounds().contains(mousePos))
                         {
