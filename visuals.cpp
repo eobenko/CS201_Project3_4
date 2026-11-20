@@ -12,6 +12,7 @@ using namespace std;
 using namespace sf;
 //Hospital &hospital, copy into () of runVisuals to connect to hospital
 //void runVisuals()
+// Opens the window and runs the GUI loop. Pages: 0 main menu, 1 patient, 2 doctor, 3 room list, 4 room lookup.
 void runVisuals(Hospital &hospital)
 {
     //Advance simulation to hour 8 before opening the window, but does it in a way that allows us to see scroll feature
@@ -22,7 +23,7 @@ void runVisuals(Hospital &hospital)
     }
 
     //Create window
-    RenderWindow window(VideoMode({1000, 650}), "Rona Hospital", Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode({1000, 650}), "Nota Hospital", Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
 
     //Colors
@@ -71,6 +72,15 @@ void runVisuals(Hospital &hospital)
     roomButtonText.setFillColor(textColor);
     roomButtonText.setPosition({710.f, 297.f});
 
+    // Waiting room button, opens the list of patients waiting to be seen
+    RectangleShape waitButton({250.f, 90.f});
+    waitButton.setPosition({375.f, 540.f});
+    waitButton.setFillColor(buttonColor);
+
+    Text waitButtonText(font, "WAITING ROOM", 24);
+    waitButtonText.setFillColor(textColor);
+    waitButtonText.setPosition({400.f, 567.f});
+
     //Advance time button
     RectangleShape timeButton({250.f, 90.f});
     timeButton.setPosition({225.f, 420.f});
@@ -100,7 +110,7 @@ void runVisuals(Hospital &hospital)
     pageTitle.setFillColor(Color::White);
     pageTitle.setPosition({350.f, 75.f});
 
-    
+
     //Name label and box
     Text nameLabel(font, "NAME", 24);//Name label
     nameLabel.setFillColor(Color::White);
@@ -167,7 +177,16 @@ void runVisuals(Hospital &hospital)
     searchText.setFillColor(textColor);
     searchText.setPosition({643.f, 547.f});
 
-    //0=main menu, 1=patient, 2=doctor, 3=patient list, 4=room lookup
+    // Delete button, only shown on the patient page while a found patient is displayed
+    RectangleShape deleteButton({170.f, 60.f});
+    deleteButton.setPosition({415.f, 535.f});
+    deleteButton.setFillColor(buttonColor);
+
+    Text deleteText(font, "DELETE", 26);
+    deleteText.setFillColor(textColor);
+    deleteText.setPosition({440.f, 547.f});
+
+    //0=main menu, 1=patient, 2=doctor, 3=room list, 4=room lookup
     int page=0;
 
 
@@ -194,9 +213,10 @@ void runVisuals(Hospital &hospital)
         {
             Room room=hospital.getRoom(number);
 
+            // Skip empty room numbers instead of stopping, since a discharged or deleted patient leaves a gap
             if(room.roomNumber==-1)
             {
-                break;
+                continue;
             }
 
             Patient patient=room.assignedPatient;
@@ -261,6 +281,34 @@ void runVisuals(Hospital &hospital)
     scrollInstructions.setFillColor(Color::White);
     scrollInstructions.setPosition({650.f, 545.f});
 
+    // Waiting room page title and column headers
+    Text waitTitle(font, "WAITING ROOM", 42);
+    waitTitle.setFillColor(Color::White);
+    waitTitle.setPosition({300.f, 55.f});
+
+    Text waitRankHeader(font, "#", 15);
+    waitRankHeader.setFillColor(Color::White);
+    waitRankHeader.setPosition({24.f,140.f});
+
+    Text waitNameHeader(font, "PATIENT", 15);
+    waitNameHeader.setFillColor(Color::White);
+    waitNameHeader.setPosition({95.f,140.f});
+
+    Text waitConditionHeader(font, "CONDITION", 15);
+    waitConditionHeader.setFillColor(Color::White);
+    waitConditionHeader.setPosition({275.f,140.f});
+
+    Text waitDobHeader(font, "PATIENT DOB", 15);
+    waitDobHeader.setFillColor(Color::White);
+    waitDobHeader.setPosition({695.f,140.f});
+
+    Text waitAgeHeader(font, "PATIENT AGE", 15);
+    waitAgeHeader.setFillColor(Color::White);
+    waitAgeHeader.setPosition({850.f,140.f});
+
+    // Patients waiting to be seen, most critical first. Refreshed each time the page opens.
+    vector<Patient> waitingList;
+
 
     //0=none, 1=name, 2=month, 3=day, 4=year
     int selectedBox=0;
@@ -274,7 +322,7 @@ void runVisuals(Hospital &hospital)
     //Selected box color
     Color selectedColor(255, 235, 150);
 
-    
+
     //Name input text
     Text nameValue(font, "", 25);
     nameValue.setFillColor(textColor);
@@ -300,6 +348,13 @@ void runVisuals(Hospital &hospital)
 
     //0=not searched, 1=found, 2=not found
     int resultStatus=0;
+
+    // The patient currently shown on the patient page, used by the delete button
+    bool patientShown=false;
+    string shownName="";
+    int shownYear=0;
+    int shownMonth=0;
+    int shownDay=0;
 
     //Room lookup page
     string roomInput="";
@@ -332,11 +387,11 @@ void runVisuals(Hospital &hospital)
     roomResultText.setPosition({535.f, 195.f});
 
     //Main loop
-    while(window.isOpen()) 
+    while(window.isOpen())
     {
-        while(const optional event=window.pollEvent()) 
+        while(const optional event=window.pollEvent())
         {
-            if(event->is<Event::Closed>()) 
+            if(event->is<Event::Closed>())
             {
                 window.close();
             }
@@ -387,6 +442,20 @@ void runVisuals(Hospital &hospital)
                             roomValue.setString("");
                             roomSelected=false;
                             roomSearched=false;
+                        }
+                        else if(waitButton.getGlobalBounds().contains(mousePos))// Waiting room button clicked
+                        {
+                            waitingList=hospital.getWaitingPatients();
+                            page=5;
+                            scrollOffset=0;
+                        }
+                    }
+                    else if(page==5)// Waiting room page
+                    {
+                        if(listBackButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=0;
+                            scrollOffset=0;
                         }
                     }
                     else if(page==3)//Patient list page
@@ -485,6 +554,15 @@ void runVisuals(Hospital &hospital)
                             resultStatus=0;
                             resultText.setString("");
                         }
+                        else if(page==1 && resultStatus==1 && patientShown && deleteButton.getGlobalBounds().contains(mousePos))// Delete button clicked, removes the shown patient from the hospital
+                        {
+                            hospital.deletePatient(shownName,shownYear,shownMonth,shownDay);
+                            patientShown=false;
+                            selectedBox=0;
+                            resultStatus=2;
+                            resultText.setFillColor(Color::Red);
+                            resultText.setString("PATIENT DELETED");
+                        }
                         else if(nameBox.getGlobalBounds().contains(mousePos))//Name input box clicked
                         {
                             selectedBox=1;
@@ -518,46 +596,50 @@ void runVisuals(Hospital &hospital)
                                 int day=stoi(dayInput);
                                 int year=stoi(yearInput);
 
+                                patientShown=false; // A new search clears the patient shown for deletion
                                 resultStatus=2;
                                 resultText.setFillColor(Color::Red);
                                 resultText.setString("RECORD NOT FOUND");
 
                                 if(page==1)
                                 {
-                                    //Search for patient in an occupied room
+                                    // Search the b-tree for the patient, then check whether they are in an occupied room
+                                    Patient patient=hospital.getPatient(nameInput,year,month,day);
                                     Room room=hospital.getRoomViaPatient(nameInput);
 
-                                    if(room.roomNumber!=-1)//If the room exists, check if the date of birth matches
+                                    if(patient.getName()!="")//If the patient exists in the b-tree, display their information
                                     {
-                                        Patient patient=room.assignedPatient;
-                                        auto dob=patient.getDob();
+                                        // Use the room's copy if they are in a room, since it has the current condition
+                                        // Remember the patient's key so the delete button can remove them
+                                        patientShown=true;
+                                        shownName=nameInput;
+                                        shownYear=year;
+                                        shownMonth=month;
+                                        shownDay=day;
 
-                                        if(int(dob.year())==year &&
-                                            unsigned(dob.month())==static_cast<unsigned>(month) &&
-                                            unsigned(dob.day())==static_cast<unsigned>(day))
-                                        {
-                                            resultStatus=1;
-                                            resultText.setFillColor(textColor);
+                                        bool inRoom=room.roomNumber!=-1 && room.assignedPatient==patient;
+                                        Patient current=inRoom ? room.assignedPatient : patient;
 
-                                            resultText.setString(//Display patient information, structured for readability like before
-                                                "PATIENT FOUND\n\n"
-                                                "Name: "+patient.getName()+"\n"
-                                                "DOB: "+monthInput+"/"+dayInput+"/"+yearInput+"\n"
-                                                "Age: "+to_string(patient.getAge().count())+"\n"
-                                                "Condition: "+to_string(patient.getCondition())+"/10\n"
-                                                "Room: "+to_string(room.roomNumber)
-                                            );
-                                        }
+                                        resultStatus=1;
+                                        resultText.setFillColor(textColor);
+
+                                        resultText.setString(//Display patient information, structured for readability like before
+                                            "PATIENT FOUND\n\n"
+                                            "Name: "+current.getName()+"\n"
+                                            "DOB: "+monthInput+"/"+dayInput+"/"+yearInput+"\n"
+                                            "Age: "+to_string(current.getAge().count())+"\n"
+                                            "Condition: "+to_string(current.getCondition())+"/10\n"
+                                            "Room: "+(inRoom ? to_string(room.roomNumber) : string("Not in a room"))
+                                        );
                                     }
                                 }
                                 else if(page==2)//Doctor record page
                                 {
-                                    //Search for doctor assigned to a room
-                                    Room room=hospital.getRoomViaDoctor(nameInput);
+                                    // Search the b-tree for the doctor by name and date of birth
+                                    Doctor doctor=hospital.getDoctor(nameInput,year,month,day);
 
-                                    if(room.roomNumber!=-1)
+                                    if(doctor.getName()!="")
                                     {
-                                        Doctor doctor=room.assignedDoctor;//If the room exists, check if the date of birth matches
                                         auto dob=doctor.getDob();
 
                                         if(int(dob.year())==year && unsigned(dob.month())==static_cast<unsigned>(month) && unsigned(dob.day())==static_cast<unsigned>(day))//If the date of birth matches, display doctor information
@@ -685,9 +767,10 @@ void runVisuals(Hospital &hospital)
             //Scroll patient list
             if(const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
             {
-                if(page==3)//Patient list page
+                if(page==3 || page==5)// Patient list or waiting room page
                 {
-                    if(wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(patientList.size()))//Scroll down, but only if there are more rows to show, this was was easier than I expected
+                    int listSize=page==3 ? static_cast<int>(patientList.size()) : static_cast<int>(waitingList.size());
+                    if(wheel->delta<0 && scrollOffset+visibleRows<listSize)//Scroll down, but only if there are more rows to show, this was was easier than I expected
                     {
                         scrollOffset++;
                     }
@@ -721,6 +804,8 @@ void runVisuals(Hospital &hospital)
             window.draw(listButtonText);
             window.draw(roomButton);
             window.draw(roomButtonText);
+            window.draw(waitButton);
+            window.draw(waitButtonText);
         }
         else if(page==4)//Drawing the room lookup page, lots of drawing
         {
@@ -777,7 +862,7 @@ void runVisuals(Hospital &hospital)
 
                 window.draw(listRow);
 
-                
+
                 //Room number
                 rowText.setString(to_string(patientList[index].roomNumber));
                 rowText.setPosition({24.f,y+12.f});
@@ -818,14 +903,72 @@ void runVisuals(Hospital &hospital)
             window.draw(listBackButton);
             window.draw(listBackText);
         }
+        else if(page==5)// Drawing the waiting room list
+        {
+            window.draw(waitTitle);
+            window.draw(waitRankHeader);
+            window.draw(waitNameHeader);
+            window.draw(waitConditionHeader);
+            window.draw(waitDobHeader);
+            window.draw(waitAgeHeader);
+
+            for(int i=0;i<visibleRows;i++)// Draw each visible waiting patient
+            {
+                int index=scrollOffset+i;
+
+                if(index>=static_cast<int>(waitingList.size()))
+                {
+                    break;
+                }
+
+                float y=185.f+i*54.f;
+
+                listRow.setPosition({12.f,y});
+                listRow.setFillColor(i%2==0 ? Color(220,220,210) : Color(195,205,205));
+                window.draw(listRow);
+
+                Patient patient=waitingList[index];
+                auto dob=patient.getDob();
+                string dobText=to_string(unsigned(dob.month()))+"/"+to_string(unsigned(dob.day()))+"/"+to_string(int(dob.year()));
+
+                //Position in the queue
+                rowText.setString(to_string(index+1));
+                rowText.setPosition({24.f,y+12.f});
+                window.draw(rowText);
+
+                //Patient
+                rowText.setString(patient.getName());
+                rowText.setPosition({95.f,y+12.f});
+                window.draw(rowText);
+
+                //Condition
+                rowText.setString(to_string(patient.getCondition())+"/10");
+                rowText.setPosition({275.f,y+12.f});
+                window.draw(rowText);
+
+                //Patient DOB
+                rowText.setString(dobText);
+                rowText.setPosition({695.f,y+12.f});
+                window.draw(rowText);
+
+                //Patient age
+                rowText.setString(to_string(patient.getAge().count()));
+                rowText.setPosition({850.f,y+12.f});
+                window.draw(rowText);
+            }
+
+            window.draw(scrollInstructions);
+            window.draw(listBackButton);
+            window.draw(listBackText);
+        }
 
         else//Drawing the patient or doctor record page
         {
-            if(page==1) 
+            if(page==1)
             {
                 pageTitle.setString("PATIENT");
             }
-            else 
+            else
             {
                 pageTitle.setString("DOCTOR");
             }
@@ -858,6 +1001,13 @@ void runVisuals(Hospital &hospital)
             window.draw(searchButton);
             window.draw(searchText);
             window.draw(searchMessage);
+
+            // Delete button is only drawn while a found patient is displayed
+            if(page==1 && resultStatus==1 && patientShown)
+            {
+                window.draw(deleteButton);
+                window.draw(deleteText);
+            }
         }
 
         //Display hospital time on every screen
@@ -875,3 +1025,4 @@ int main()
     return 0;
 }
 #endif*/
+

@@ -34,4 +34,3 @@ run_visuals:
 # remove visuals
 clean_visuals:
 	rm ./visuals
-

@@ -1,5 +1,6 @@
 #include "doctor.h"
 
+// Creates a doctor with a date of birth, skill, and shift. Skill is clamped to MIN_SKILL and MAX_SKILL.
 Doctor::Doctor(std::string n, year y, month m, day d, int s, hours start, hours end) : Person(n, y, m, d)
 {
     skill = s;
@@ -16,6 +17,7 @@ Doctor::Doctor(std::string n, year y, month m, day d, int s, hours start, hours 
     }
 }
 
+// Creates a doctor with a date of birth, skill, and shift. Skill is clamped to MIN_SKILL and MAX_SKILL.
 Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : Person(n, y, m, d)
 {
     skill = s;
@@ -32,13 +34,16 @@ Doctor::Doctor(std::string n, int y, int m, int d, int s, int start, int end) : 
     }
 }
 
+// Creates an empty doctor
 Doctor::Doctor() : Doctor("", 0, 1, 1, 0, 0, 0) {}
 
+// Returns the skill, from MIN_SKILL to MAX_SKILL
 int Doctor::skillLevel() const
 {
     return skill;
 }
 
+// Returns true if the given hour falls inside the shift. A shift that ends before it starts wraps past midnight.
 bool Doctor::isOnShift(hours current_time) const
 {
     if (shiftStart <= shiftEnd)
@@ -51,11 +56,13 @@ bool Doctor::isOnShift(hours current_time) const
     }
 }
 
+// Returns the hour the shift starts
 hours Doctor::shiftStartTime() const
 {
     return shiftStart;
 }
 
+// Returns the hour the shift ends
 hours Doctor::shiftEndTime() const
 {
     return shiftEnd;

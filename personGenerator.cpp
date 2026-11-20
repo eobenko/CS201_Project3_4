@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// Writes people.txt, one line per name in randomnames.txt, with a random date of birth
 int main()
 {
     ifstream names("randomnames.txt");

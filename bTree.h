@@ -295,9 +295,9 @@ private:
         }
         else
         {
+            // The key is not in this leaf, so it is not in the tree and there is nothing to remove
             if (node->leaf)
             {
-                std::cout << "The key " << k << " is not present in the tree\n";
                 return;
             }
 
@@ -346,30 +346,24 @@ public:
         return (root == nullptr) ? nullptr : search(root, k);
     }
 
-    /* More project 4 fodder
     // Function to remove a key from the tree
     void remove(T k)
     {
         if (!root)
         {
-            std::cout << "The tree is empty\n";
             return;
         }
 
         remove(root, k);
 
-        if (root->n == 0)
+        // A merge can leave the root empty, so its only child becomes the new root (an empty leaf root is kept so inserts still work)
+        if (root->n == 0 && !root->leaf)
         {
             BTreeNode<T, ORDER> *tmp = root;
-            if (root->leaf)
-                root = nullptr;
-            else
-                root = root->children[0];
-
+            root = root->children[0];
             delete tmp;
         }
     }
-    */
 };
 
 #endif
