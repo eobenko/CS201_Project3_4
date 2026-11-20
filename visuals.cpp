@@ -8,25 +8,15 @@
 #include <vector>
 #include "hospital.h"
 
-/*
-    Change patient list to be room list that has patient and doctors in them
-    Connect to Ronin's work
-*/
-
-
-
-
-
-
 using namespace std;
 using namespace sf;
-//Hospital &hospital
-// void runVisuals()
+//Hospital &hospital, copy into () of runVisuals to connect to hospital
+//void runVisuals()
 void runVisuals(Hospital &hospital)
 {
     //Advance simulation to hour 8 before opening the window, but does it in a way that allows us to see scroll feature
     std::chrono::hours hospitalTime{0};
-    for (int i=0;i<200;i++)
+    for(int i=0;i<8;i++)
     {
         hospitalTime=hospital.incrementTime();
     }
@@ -42,8 +32,8 @@ void runVisuals(Hospital &hospital)
 
     //Load font
     Font font;
-    // if (!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
-    if (!font.openFromFile("./DejaVuSans.ttf"))
+    //if(!font.openFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    if(!font.openFromFile("./DejaVuSans.ttf"))
     {
         cout<<"Font failed to load"<<endl;
         return;
@@ -59,7 +49,7 @@ void runVisuals(Hospital &hospital)
     patientButton.setPosition({75.f, 270.f});
     patientButton.setFillColor(buttonColor);
 
-    Text patientText(font, "PATIENT", 28);
+    Text patientText(font, "PATIENT", 28);//Patient button text
     patientText.setFillColor(textColor);
     patientText.setPosition({140.f, 295.f});
 
@@ -68,7 +58,7 @@ void runVisuals(Hospital &hospital)
     doctorButton.setPosition({375.f, 270.f});
     doctorButton.setFillColor(buttonColor);
 
-    Text doctorText(font, "DOCTOR", 28);
+    Text doctorText(font, "DOCTOR", 28);//Doctor button text
     doctorText.setFillColor(textColor);
     doctorText.setPosition({440.f, 295.f});
 
@@ -77,7 +67,7 @@ void runVisuals(Hospital &hospital)
     roomButton.setPosition({675.f, 270.f});
     roomButton.setFillColor(buttonColor);
 
-    Text roomButtonText(font, "ROOM LOOKUP", 24);
+    Text roomButtonText(font, "ROOM LOOKUP", 24);//Room lookup button text
     roomButtonText.setFillColor(textColor);
     roomButtonText.setPosition({710.f, 297.f});
 
@@ -86,7 +76,7 @@ void runVisuals(Hospital &hospital)
     timeButton.setPosition({225.f, 420.f});
     timeButton.setFillColor(buttonColor);
 
-    Text timeButtonText(font, "ADVANCE TIME", 24);
+    Text timeButtonText(font, "ADVANCE TIME", 24);//Advance time button text
     timeButtonText.setFillColor(textColor);
     timeButtonText.setPosition({265.f, 447.f});
 
@@ -95,7 +85,7 @@ void runVisuals(Hospital &hospital)
     listButton.setPosition({525.f, 420.f});
     listButton.setFillColor(buttonColor);
 
-    Text listButtonText(font, "ROOM LIST", 24);
+    Text listButtonText(font, "ROOM LIST", 24);//Room list button text
     listButtonText.setFillColor(textColor);
     listButtonText.setPosition({575.f, 447.f});
 
@@ -151,7 +141,7 @@ void runVisuals(Hospital &hospital)
 
 
     //Back button
-    RectangleShape backButton({170.f, 60.f});//Back button
+    RectangleShape backButton({170.f, 60.f});
     backButton.setPosition({210.f, 535.f});
     backButton.setFillColor(buttonColor);
 
@@ -164,7 +154,7 @@ void runVisuals(Hospital &hospital)
     listBackButton.setPosition({415.f, 560.f});
     listBackButton.setFillColor(buttonColor);
 
-    Text listBackText(font, "BACK", 26);
+    Text listBackText(font, "BACK", 26);//Back button text
     listBackText.setFillColor(textColor);
     listBackText.setPosition({458.f, 572.f});
 
@@ -181,6 +171,7 @@ void runVisuals(Hospital &hospital)
     int page=0;
 
 
+
     //Temporary room information
     struct RoomRow
     {
@@ -195,16 +186,15 @@ void runVisuals(Hospital &hospital)
 
     //Room list populated from occupied rooms
     vector<RoomRow> roomList;
-
-    auto refreshRooms=[&]()
+    auto refreshRooms=[&]()//clears the room list and repopulates it with the current occupied rooms
     {
         roomList.clear();
 
-        for (int number=0;number<10000;number+=18)
+        for(int number=0;number<10000;number+=18)//Iterate through all possible room numbers, but only the ones that are multiples of 18
         {
             Room room=hospital.getRoom(number);
 
-            if (room.roomNumber==-1)
+            if(room.roomNumber==-1)
             {
                 break;
             }
@@ -216,9 +206,7 @@ void runVisuals(Hospital &hospital)
             auto doctorDob=doctor.getDob();
 
             string dobText=to_string(unsigned(dob.month()))+"/"+to_string(unsigned(dob.day()))+"/"+to_string(int(dob.year()));
-
             string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+to_string(unsigned(doctorDob.day()))+"/"+to_string(int(doctorDob.year()));
-
             roomList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), doctorDobText, dobText, static_cast<int>(patient.getAge().count())});
         }
     };
@@ -239,27 +227,27 @@ void runVisuals(Hospital &hospital)
     roomHeader.setFillColor(Color::White);
     roomHeader.setPosition({24.f,140.f});
 
-    Text nameHeader(font, "PATIENT", 15);
+    Text nameHeader(font, "PATIENT", 15);//Patient name header
     nameHeader.setFillColor(Color::White);
     nameHeader.setPosition({95.f,140.f});
 
-    Text conditionHeader(font, "CONDITION", 15);
+    Text conditionHeader(font, "CONDITION", 15);//Patient condition header
     conditionHeader.setFillColor(Color::White);
     conditionHeader.setPosition({275.f,140.f});
 
-    Text doctorHeader(font, "DOCTOR", 15);
+    Text doctorHeader(font, "DOCTOR", 15);//Doctor name header
     doctorHeader.setFillColor(Color::White);
     doctorHeader.setPosition({380.f,140.f});
 
-    Text doctorDobHeader(font, "DOCTOR DOB", 15);
+    Text doctorDobHeader(font, "DOCTOR DOB", 15);//Doctor date of birth header
     doctorDobHeader.setFillColor(Color::White);
     doctorDobHeader.setPosition({555.f,140.f});
 
-    Text dobHeader(font, "PATIENT DOB", 15);
+    Text dobHeader(font, "PATIENT DOB", 15);//Patient date of birth header
     dobHeader.setFillColor(Color::White);
     dobHeader.setPosition({695.f,140.f});
 
-    Text ageHeader(font, "PATIENT AGE", 15);
+    Text ageHeader(font, "PATIENT AGE", 15);//Patient age header
     ageHeader.setFillColor(Color::White);
     ageHeader.setPosition({850.f,140.f});
 
@@ -318,19 +306,19 @@ void runVisuals(Hospital &hospital)
     bool roomSelected=false;
     bool roomSearched=false;
 
-    Text roomTitle(font, "ROOM LOOKUP", 45);
+    Text roomTitle(font, "ROOM LOOKUP", 45);//Room lookup page title
     roomTitle.setFillColor(Color::White);
     roomTitle.setPosition({330.f, 75.f});
 
-    Text roomLabel(font, "ROOM NUMBER", 24);
+    Text roomLabel(font, "ROOM NUMBER", 24);//Room number label
     roomLabel.setFillColor(Color::White);
     roomLabel.setPosition({60.f, 205.f});
 
-    RectangleShape roomBox({400.f, 65.f});
+    RectangleShape roomBox({400.f, 65.f});//Room number input box
     roomBox.setPosition({60.f, 245.f});
     roomBox.setFillColor(buttonColor);
 
-    Text roomValue(font, "", 25);
+    Text roomValue(font, "", 25);//Room number input text
     roomValue.setFillColor(textColor);
     roomValue.setPosition({75.f, 260.f});
 
@@ -339,39 +327,39 @@ void runVisuals(Hospital &hospital)
     roomResultBox.setPosition({510.f, 175.f});
     roomResultBox.setFillColor(buttonColor);
 
-    Text roomResultText(font, "", 18);
+    Text roomResultText(font, "", 18);//Room results text
     roomResultText.setFillColor(textColor);
     roomResultText.setPosition({535.f, 195.f});
 
     //Main loop
-    while (window.isOpen()) 
+    while(window.isOpen()) 
     {
-        while (const optional event=window.pollEvent()) 
+        while(const optional event=window.pollEvent()) 
         {
-            if (event->is<Event::Closed>()) 
+            if(event->is<Event::Closed>()) 
             {
                 window.close();
             }
 
             //Detect mouse clicks
             //Detect mouse clicks
-            if (const auto* mouse=event->getIf<Event::MouseButtonPressed>())
+            if(const auto* mouse=event->getIf<Event::MouseButtonPressed>())
             {
-                if (mouse->button==Mouse::Button::Left)
+                if(mouse->button==Mouse::Button::Left)//Left mouse button
                 {
-                    Vector2f mousePos=window.mapPixelToCoords(mouse->position);
+                    Vector2f mousePos=window.mapPixelToCoords(mouse->position);//Get mouse position in window coordinates
 
-                    if (page==0)
+                    if(page==0)//Main menu
                     {
-                        if (patientButton.getGlobalBounds().contains(mousePos))
+                        if(patientButton.getGlobalBounds().contains(mousePos))//Patient button clicked
                         {
                             page=1;
                         }
-                        else if (doctorButton.getGlobalBounds().contains(mousePos))
+                        else if(doctorButton.getGlobalBounds().contains(mousePos))//Doctor button clicked
                         {
                             page=2;
                         }
-                        else if (timeButton.getGlobalBounds().contains(mousePos))
+                        else if(timeButton.getGlobalBounds().contains(mousePos))//Advance time button clicked
                         {
                             //Advance the actual hospital simulation
                             hospitalTime=hospital.incrementTime();
@@ -379,20 +367,20 @@ void runVisuals(Hospital &hospital)
                             //Update displayed counter
                             string hourString=to_string(hospitalTime.count());
 
-                            if (hospitalTime.count()<10)
+                            if(hospitalTime.count()<10)
                             {
                                 hourString="0"+hourString;
                             }
 
                             timeCounter.setString("  HOUR: "+hourString);
                         }
-                        else if (listButton.getGlobalBounds().contains(mousePos))
+                        else if(listButton.getGlobalBounds().contains(mousePos))//List rooms button clicked
                         {
                             refreshRooms();
                             page=3;
                             scrollOffset=0;
                         }
-                        else if (roomButton.getGlobalBounds().contains(mousePos))
+                        else if(roomButton.getGlobalBounds().contains(mousePos))//Room lookup button clicked
                         {
                             page=4;
                             roomInput="";
@@ -401,9 +389,17 @@ void runVisuals(Hospital &hospital)
                             roomSearched=false;
                         }
                     }
-                    else if (page==4)
+                    else if(page==3)//Room list page
                     {
-                        if (backButton.getGlobalBounds().contains(mousePos))
+                        if(listBackButton.getGlobalBounds().contains(mousePos))
+                        {
+                            page=0;
+                            scrollOffset=0;
+                        }
+                    }
+                    else if(page==4)//Room lookup page
+                    {
+                        if(backButton.getGlobalBounds().contains(mousePos))//Back button clicked
                         {
                             page=0;
                             roomInput="";
@@ -411,25 +407,25 @@ void runVisuals(Hospital &hospital)
                             roomSelected=false;
                             roomSearched=false;
                         }
-                        else if (roomBox.getGlobalBounds().contains(mousePos))
+                        else if(roomBox.getGlobalBounds().contains(mousePos))//Room number input box clicked
                         {
                             roomSelected=true;
                         }
-                        else if (searchButton.getGlobalBounds().contains(mousePos))
+                        else if(searchButton.getGlobalBounds().contains(mousePos))//Search button clicked
                         {
                             roomSelected=false;
                             roomSearched=true;
 
-                            if (roomInput.empty())
+                            if(roomInput.empty())//No room number entered
                             {
                                 roomResultText.setString("Please enter a room number.");
                             }
-                            else
+                            else//Room number entered, search for room
                             {
                                 int number=stoi(roomInput);
                                 Room room=hospital.getRoom(number);
 
-                                if (room.roomNumber==-1)
+                                if(room.roomNumber==-1)
                                 {
                                     roomResultText.setString("Room not found.");
                                 }
@@ -439,15 +435,11 @@ void runVisuals(Hospital &hospital)
                                     Doctor doctor=room.assignedDoctor;
 
                                     auto patientDob=patient.getDob();
-                                    string patientDobText=to_string(unsigned(patientDob.month()))+"/"+
-                                                        to_string(unsigned(patientDob.day()))+"/"+
-                                                        to_string(int(patientDob.year()));
+                                    string patientDobText=to_string(unsigned(patientDob.month()))+"/"+to_string(unsigned(patientDob.day()))+"/"+to_string(int(patientDob.year()));
 
                                     auto doctorDob=doctor.getDob();
-                                    string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+
-                                                        to_string(unsigned(doctorDob.day()))+"/"+
-                                                        to_string(int(doctorDob.year()));
-                                    roomResultText.setString(
+                                    string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+to_string(unsigned(doctorDob.day()))+"/"+to_string(int(doctorDob.year()));
+                                    roomResultText.setString(//Display room information, structured for readability because it was too hard to order them before
                                         "ROOM: "+to_string(number)+"\n\n"
                                         "PATIENT\n"
                                         "Name: "+patient.getName()+"\n"
@@ -469,17 +461,9 @@ void runVisuals(Hospital &hospital)
                             roomSelected=false;
                         }
                     }
-                    else if (page==3)
+                    else//Patient or doctor record page, 1 and 2 were implemented before the others but after 0 option. They are functionally the same
                     {
-                        if (listBackButton.getGlobalBounds().contains(mousePos))
-                        {
-                            page=0;
-                            scrollOffset=0;
-                        }
-                    }
-                    else
-                    {
-                        if (backButton.getGlobalBounds().contains(mousePos))
+                        if(backButton.getGlobalBounds().contains(mousePos))
                         {
                             page=0;
                             selectedBox=0;
@@ -501,35 +485,34 @@ void runVisuals(Hospital &hospital)
                             resultStatus=0;
                             resultText.setString("");
                         }
-                        else if (nameBox.getGlobalBounds().contains(mousePos))
+                        else if(nameBox.getGlobalBounds().contains(mousePos))//Name input box clicked
                         {
                             selectedBox=1;
                         }
-                        else if (monthBox.getGlobalBounds().contains(mousePos))
+                        else if(monthBox.getGlobalBounds().contains(mousePos))//Month input box clicked
                         {
                             selectedBox=2;
                         }
-                        else if (dayBox.getGlobalBounds().contains(mousePos))
+                        else if(dayBox.getGlobalBounds().contains(mousePos))//Day input box clicked
                         {
                             selectedBox=3;
                         }
-                        else if (yearBox.getGlobalBounds().contains(mousePos))
+                        else if(yearBox.getGlobalBounds().contains(mousePos))//Year input box clicked
                         {
                             selectedBox=4;
                         }
-                        else if (searchButton.getGlobalBounds().contains(mousePos))
+                        else if(searchButton.getGlobalBounds().contains(mousePos))//Search button clicked
                         {
                             selectedBox=0;
                             searchMessage.setString("");
 
-                            if (nameInput.empty() || monthInput.empty() ||
-                                dayInput.empty() || yearInput.empty())
+                            if(nameInput.empty() || monthInput.empty() || dayInput.empty() || yearInput.empty())//Check if any input fields are empty
                             {
                                 resultStatus=2;
                                 resultText.setFillColor(Color::Red);
                                 resultText.setString("Please complete every field.");
                             }
-                            else
+                            else//All fields filled, search for record
                             {
                                 int month=stoi(monthInput);
                                 int day=stoi(dayInput);
@@ -539,24 +522,24 @@ void runVisuals(Hospital &hospital)
                                 resultText.setFillColor(Color::Red);
                                 resultText.setString("RECORD NOT FOUND");
 
-                                if (page==1)
+                                if(page==1)
                                 {
                                     //Search for patient in an occupied room
                                     Room room=hospital.getRoomViaPatient(nameInput);
 
-                                    if (room.roomNumber!=-1)
+                                    if(room.roomNumber!=-1)//If the room exists, check if the date of birth matches
                                     {
                                         Patient patient=room.assignedPatient;
                                         auto dob=patient.getDob();
 
-                                        if (int(dob.year())==year &&
+                                        if(int(dob.year())==year &&
                                             unsigned(dob.month())==static_cast<unsigned>(month) &&
                                             unsigned(dob.day())==static_cast<unsigned>(day))
                                         {
                                             resultStatus=1;
                                             resultText.setFillColor(textColor);
 
-                                            resultText.setString(
+                                            resultText.setString(//Display patient information, structured for readability like before
                                                 "PATIENT FOUND\n\n"
                                                 "Name: "+patient.getName()+"\n"
                                                 "DOB: "+monthInput+"/"+dayInput+"/"+yearInput+"\n"
@@ -567,19 +550,17 @@ void runVisuals(Hospital &hospital)
                                         }
                                     }
                                 }
-                                else if (page==2)
+                                else if(page==2)//Doctor record page
                                 {
                                     //Search for doctor assigned to a room
                                     Room room=hospital.getRoomViaDoctor(nameInput);
 
-                                    if (room.roomNumber!=-1)
+                                    if(room.roomNumber!=-1)
                                     {
-                                        Doctor doctor=room.assignedDoctor;
+                                        Doctor doctor=room.assignedDoctor;//If the room exists, check if the date of birth matches
                                         auto dob=doctor.getDob();
 
-                                        if (int(dob.year())==year &&
-                                            unsigned(dob.month())==static_cast<unsigned>(month) &&
-                                            unsigned(dob.day())==static_cast<unsigned>(day))
+                                        if(int(dob.year())==year && unsigned(dob.month())==static_cast<unsigned>(month) && unsigned(dob.day())==static_cast<unsigned>(day))//If the date of birth matches, display doctor information
                                         {
                                             resultStatus=1;
                                             resultText.setFillColor(textColor);
@@ -607,49 +588,49 @@ void runVisuals(Hospital &hospital)
                 }
             }
             //Keyboard text input
-            if (const auto* text=event->getIf<Event::TextEntered>())
+            if(const auto* text=event->getIf<Event::TextEntered>())
             {
-                if (page!=0 && selectedBox!=0)
+                if(page!=0 && selectedBox!=0)
                 {
                     string* input=nullptr;
                     int maxLength=0;
 
-                    if (selectedBox==1)
+                    if(selectedBox==1)
                     {
                         input=&nameInput;
                         maxLength=24;
                     }
-                    else if (selectedBox==2)
+                    else if(selectedBox==2)
                     {
                         input=&monthInput;
                         maxLength=2;
                     }
-                    else if (selectedBox==3)
+                    else if(selectedBox==3)
                     {
                         input=&dayInput;
                         maxLength=2;
                     }
-                    else if (selectedBox==4)
+                    else if(selectedBox==4)
                     {
                         input=&yearInput;
                         maxLength=4;
                     }
 
-                    if (input!=nullptr)
+                    if(input!=nullptr)
                     {
-                        if (text->unicode==8)
+                        if(text->unicode==8)
                         {
-                            if (!input->empty())
+                            if(!input->empty())
                             {
                                 input->pop_back();
                             }
                         }
-                        else if (input->size()<static_cast<size_t>(maxLength))
+                        else if(input->size()<static_cast<size_t>(maxLength))
                         {
-                            if (selectedBox==1)
+                            if(selectedBox==1)
                             {
                                 //Letters and spaces
-                                if ((text->unicode>=65 && text->unicode<=90) ||
+                                if((text->unicode>=65 && text->unicode<=90) ||
                                     (text->unicode>=97 && text->unicode<=122) ||
                                     text->unicode==32)
                                 {
@@ -659,7 +640,7 @@ void runVisuals(Hospital &hospital)
                             else
                             {
                                 //Numbers only
-                                if (text->unicode>=48 && text->unicode<=57)
+                                if(text->unicode>=48 && text->unicode<=57)
                                 {
                                     *input+=static_cast<char>(text->unicode);
                                 }
@@ -680,37 +661,37 @@ void runVisuals(Hospital &hospital)
             }
 
             //Room number keyboard input
-            if (const auto* text=event->getIf<Event::TextEntered>())
+            if(const auto* text=event->getIf<Event::TextEntered>())
             {
-                if (page==4 && roomSelected)
+                if(page==4 && roomSelected)//Room lookup page and room number input box selected
                 {
-                    if (text->unicode==8)
+                    if(text->unicode==8)//Backspace
                     {
-                        if (!roomInput.empty())
+                        if(!roomInput.empty())
                         {
                             roomInput.pop_back();
                         }
                     }
-                    else if (text->unicode>=48 && text->unicode<=57 && roomInput.size()<5)
+                    else if(text->unicode>=48 && text->unicode<=57 && roomInput.size()<5)//Numbers only, max 5 digits
                     {
-                        roomInput+=static_cast<char>(text->unicode);
+                        roomInput+=static_cast<char>(text->unicode);//Append character to room input
                     }
 
-                    roomValue.setString(roomInput);
+                    roomValue.setString(roomInput);//Update displayed room number input
                     roomSearched=false;
                 }
             }
 
             //Scroll room list
-            if (const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
+            if(const auto* wheel=event->getIf<Event::MouseWheelScrolled>())
             {
-                if (page==3)
+                if(page==3)//Room list page
                 {
-                    if (wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(roomList.size()))
+                    if(wheel->delta<0 && scrollOffset+visibleRows<static_cast<int>(roomList.size()))//Scroll down, but only if there are more rows to show, this was was easier than I expected
                     {
                         scrollOffset++;
                     }
-                    else if (wheel->delta>0 && scrollOffset>0)
+                    else if(wheel->delta>0 && scrollOffset>0)//Scroll up, but only if not already at the top
                     {
                         scrollOffset--;
                     }
@@ -726,9 +707,9 @@ void runVisuals(Hospital &hospital)
 
         window.clear(background);
 
-        if (page==0)//Drawing the main menu
+        if(page==0)//Drawing the main menu, lots of drawing from here out
         {
-            // Main menu
+            //Main menu
             window.draw(title);
             window.draw(patientButton);
             window.draw(doctorButton);
@@ -736,22 +717,21 @@ void runVisuals(Hospital &hospital)
             window.draw(doctorText);
             window.draw(timeButton);
             window.draw(timeButtonText);
-            window.draw(timeCounter);
             window.draw(listButton);
             window.draw(listButtonText);
             window.draw(roomButton);
             window.draw(roomButtonText);
         }
-        else if (page==4)//Drawing the room lookup page
+        else if(page==4)//Drawing the room lookup page, lots of drawing
         {
-            roomBox.setFillColor(roomSelected ? selectedColor : buttonColor);
+            roomBox.setFillColor(roomSelected ? selectedColor : buttonColor);//Highlight room number input box if selected
 
             window.draw(roomTitle);
             window.draw(roomLabel);
             window.draw(roomBox);
             window.draw(roomValue);
 
-            if (roomSearched)
+            if(roomSearched)
             {
                 window.draw(roomResultBox);
                 window.draw(roomResultText);
@@ -762,7 +742,7 @@ void runVisuals(Hospital &hospital)
             window.draw(searchButton);
             window.draw(searchText);
         }
-        else if (page==3)//Drawing the room list
+        else if(page==3)//Drawing the room list
         {
             window.draw(listTitle);
             window.draw(roomHeader);
@@ -773,11 +753,11 @@ void runVisuals(Hospital &hospital)
             window.draw(dobHeader);
             window.draw(ageHeader);
 
-            for (int i=0;i<visibleRows;i++)
+            for(int i=0;i<visibleRows;i++)//Draw each visible row of the room list
             {
                 int index=scrollOffset+i;
 
-                if (index>=static_cast<int>(roomList.size()))
+                if(index>=static_cast<int>(roomList.size()))
                 {
                     break;
                 }
@@ -786,7 +766,7 @@ void runVisuals(Hospital &hospital)
 
                 listRow.setPosition({12.f,y});
 
-                if (i%2==0)
+                if(i%2==0)
                 {
                     listRow.setFillColor(Color(220,220,210));
                 }
@@ -840,7 +820,7 @@ void runVisuals(Hospital &hospital)
 
         else//Drawing the patient or doctor record page
         {
-            if (page==1) 
+            if(page==1) 
             {
                 pageTitle.setString("PATIENT");
             }
@@ -865,7 +845,7 @@ void runVisuals(Hospital &hospital)
             window.draw(yearText);
 
             //Display search results
-            if (resultStatus!=0)
+            if(resultStatus!=0)
             {
                 window.draw(resultBox);
                 window.draw(resultHeading);
@@ -879,15 +859,18 @@ void runVisuals(Hospital &hospital)
             window.draw(searchMessage);
         }
 
+        //Display hospital time on every screen
+        window.draw(timeCounter);
+
         window.display();
     }
 }
 
-
+/*
 #ifdef TEST_VISUALS
 int main()
 {
     runVisuals();
     return 0;
 }
-#endif
+#endif*/
