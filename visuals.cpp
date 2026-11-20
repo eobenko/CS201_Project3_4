@@ -25,13 +25,14 @@ using namespace sf;
 void runVisuals(Hospital &hospital)
 {
     //Advance simulation to hour 8 before opening the window, but does it in a way that allows us to see scroll feature
+    std::chrono::hours hospitalTime{0};
     for (int i=0;i<200;i++)
     {
-        hospital.incrementTime();
+        hospitalTime=hospital.incrementTime();
     }
 
     //Create window
-    RenderWindow window(VideoMode({1000, 650}), "Ronita Hospital", Style::Titlebar | Style::Close);
+    RenderWindow window(VideoMode({1000, 650}), "Rona Hospital", Style::Titlebar | Style::Close);
     window.setFramerateLimit(60);
 
     //Colors
@@ -99,10 +100,8 @@ void runVisuals(Hospital &hospital)
     listButtonText.setPosition({575.f, 447.f});
 
     //Simulation time counter
-    int currentHour=8;
     //int currentDay=1;
-
-    Text timeCounter(font, "  HOUR: " + to_string(currentHour), 20);
+    Text timeCounter(font, "  HOUR: " + to_string(hospitalTime.count()), 20);
     timeCounter.setFillColor(Color::White);
     timeCounter.setPosition({770.f, 20.f});
 
@@ -189,6 +188,7 @@ void runVisuals(Hospital &hospital)
         string patientName;
         int condition;
         string doctorName;
+        string doctorDob;
         string dob;
         int age;
     };
@@ -211,13 +211,15 @@ void runVisuals(Hospital &hospital)
 
             Patient patient=room.assignedPatient;
             Doctor doctor=room.assignedDoctor;
+
             auto dob=patient.getDob();
+            auto doctorDob=doctor.getDob();
 
-            string dobText=to_string(unsigned(dob.month()))+"/"+
-                        to_string(unsigned(dob.day()))+"/"+
-                        to_string(int(dob.year()));
+            string dobText=to_string(unsigned(dob.month()))+"/"+to_string(unsigned(dob.day()))+"/"+to_string(int(dob.year()));
 
-            roomList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), dobText, static_cast<int>(patient.getAge().count())});
+            string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+to_string(unsigned(doctorDob.day()))+"/"+to_string(int(doctorDob.year()));
+
+            roomList.push_back({room.roomNumber, patient.getName(), patient.getCondition(), doctor.getName(), doctorDobText, dobText, static_cast<int>(patient.getAge().count())});
         }
     };
 
@@ -233,33 +235,37 @@ void runVisuals(Hospital &hospital)
     listTitle.setPosition({340.f, 55.f});
 
     //Table headers
-    Text roomHeader(font, "ROOM", 17);
+    Text roomHeader(font, "ROOM", 15);
     roomHeader.setFillColor(Color::White);
-    roomHeader.setPosition({75.f, 140.f});
+    roomHeader.setPosition({24.f,140.f});
 
-    Text nameHeader(font, "PATIENT", 17);
+    Text nameHeader(font, "PATIENT", 15);
     nameHeader.setFillColor(Color::White);
-    nameHeader.setPosition({155.f, 140.f});
+    nameHeader.setPosition({95.f,140.f});
 
-    Text conditionHeader(font, "CONDITION", 17);
+    Text conditionHeader(font, "CONDITION", 15);
     conditionHeader.setFillColor(Color::White);
-    conditionHeader.setPosition({350.f, 140.f});
+    conditionHeader.setPosition({275.f,140.f});
 
-    Text doctorHeader(font, "DOCTOR", 17);
+    Text doctorHeader(font, "DOCTOR", 15);
     doctorHeader.setFillColor(Color::White);
-    doctorHeader.setPosition({470.f, 140.f});
+    doctorHeader.setPosition({380.f,140.f});
 
-    Text dobHeader(font, "PATIENT DOB", 17);
+    Text doctorDobHeader(font, "DOCTOR DOB", 15);
+    doctorDobHeader.setFillColor(Color::White);
+    doctorDobHeader.setPosition({555.f,140.f});
+
+    Text dobHeader(font, "PATIENT DOB", 15);
     dobHeader.setFillColor(Color::White);
-    dobHeader.setPosition({680.f, 140.f});
+    dobHeader.setPosition({695.f,140.f});
 
-    Text ageHeader(font, "AGE", 17);
+    Text ageHeader(font, "PATIENT AGE", 15);
     ageHeader.setFillColor(Color::White);
-    ageHeader.setPosition({860.f, 140.f});
+    ageHeader.setPosition({850.f,140.f});
 
     //Reusable room row
-    RectangleShape listRow({850.f, 48.f});
-    Text rowText(font, "", 15);
+    RectangleShape listRow({960.f, 48.f});
+    Text rowText(font, "", 14);
     rowText.setFillColor(textColor);
 
     //Scroll instructions
@@ -368,12 +374,12 @@ void runVisuals(Hospital &hospital)
                         else if (timeButton.getGlobalBounds().contains(mousePos))
                         {
                             //Advance the actual hospital simulation
-                            currentHour=static_cast<int>(hospital.incrementTime().count());
+                            hospitalTime=hospital.incrementTime();
 
                             //Update displayed counter
-                            string hourString=to_string(currentHour);
+                            string hourString=to_string(hospitalTime.count());
 
-                            if (currentHour<10)
+                            if (hospitalTime.count()<10)
                             {
                                 hourString="0"+hourString;
                             }
@@ -432,14 +438,26 @@ void runVisuals(Hospital &hospital)
                                     Patient patient=room.assignedPatient;
                                     Doctor doctor=room.assignedDoctor;
 
+                                    auto patientDob=patient.getDob();
+                                    string patientDobText=to_string(unsigned(patientDob.month()))+"/"+
+                                                        to_string(unsigned(patientDob.day()))+"/"+
+                                                        to_string(int(patientDob.year()));
+
+                                    auto doctorDob=doctor.getDob();
+                                    string doctorDobText=to_string(unsigned(doctorDob.month()))+"/"+
+                                                        to_string(unsigned(doctorDob.day()))+"/"+
+                                                        to_string(int(doctorDob.year()));
                                     roomResultText.setString(
                                         "ROOM: "+to_string(number)+"\n\n"
                                         "PATIENT\n"
                                         "Name: "+patient.getName()+"\n"
+                                        "DOB: "+patientDobText+"\n"
+                                        "Age: "+to_string(patient.getAge().count())+"\n"
                                         "Condition: "+to_string(patient.getCondition())+"/10\n\n"
                                         "DOCTOR\n"
                                         "Name: "+doctor.getName()+"\n"
                                         "Skill: "+to_string(doctor.skillLevel())+"/10\n"
+                                        "DOB: "+doctorDobText+"\n"
                                         "Shift: "+to_string(doctor.shiftStartTime().count())+
                                         ":00 - "+to_string(doctor.shiftEndTime().count())+":00"
                                     );
@@ -513,52 +531,74 @@ void runVisuals(Hospital &hospital)
                             }
                             else
                             {
-                                //TODO: Connect to Hospital B-Tree search
-                                //TODO: Search patients if page==1
-                                //TODO: Search doctors if page==2
-                                //TODO: Populate resultText with returned information
+                                int month=stoi(monthInput);
+                                int day=stoi(dayInput);
+                                int year=stoi(yearInput);
 
-                                //Temporary demonstration
-                                if (nameInput=="TEST")
+                                resultStatus=2;
+                                resultText.setFillColor(Color::Red);
+                                resultText.setString("RECORD NOT FOUND");
+
+                                if (page==1)
                                 {
-                                    resultStatus=1;
-                                    resultText.setFillColor(textColor);
+                                    //Search for patient in an occupied room
+                                    Room room=hospital.getRoomViaPatient(nameInput);
 
-                                    if (page==1)
+                                    if (room.roomNumber!=-1)
                                     {
-                                        resultText.setString(
-                                            "RECORD FOUND (DEMO)\n"
-                                            "Name: Test Patient\n"
-                                            "DOB: 01/01/2000\n"
-                                            "Age: 26\n"
-                                            "Condition: 6 / 10"
-                                        );
-                                    }
-                                    else
-                                    {
-                                        resultText.setString(
-                                            "RECORD FOUND (DEMO)\n"
-                                            "Name: Test Doctor\n"
-                                            "DOB: 01/01/2000\n"
-                                            "Age: 26\n"
-                                            "Skill: 8 / 10\n"
-                                            "Shift: 08:00 - 16:00\n"
-                                            "On shift: Yes"
-                                        );
+                                        Patient patient=room.assignedPatient;
+                                        auto dob=patient.getDob();
+
+                                        if (int(dob.year())==year &&
+                                            unsigned(dob.month())==static_cast<unsigned>(month) &&
+                                            unsigned(dob.day())==static_cast<unsigned>(day))
+                                        {
+                                            resultStatus=1;
+                                            resultText.setFillColor(textColor);
+
+                                            resultText.setString(
+                                                "PATIENT FOUND\n\n"
+                                                "Name: "+patient.getName()+"\n"
+                                                "DOB: "+monthInput+"/"+dayInput+"/"+yearInput+"\n"
+                                                "Age: "+to_string(patient.getAge().count())+"\n"
+                                                "Condition: "+to_string(patient.getCondition())+"/10\n"
+                                                "Room: "+to_string(room.roomNumber)
+                                            );
+                                        }
                                     }
                                 }
-                                else
+                                else if (page==2)
                                 {
-                                    resultStatus=2;
-                                    resultText.setFillColor(Color::Red);
-                                    resultText.setString(
-                                        "RECORD NOT FOUND (DEMO)\n\n"
-                                        "No matching record.\n"
-                                        "Check the name and date of birth."
-                                    );
+                                    //Search for doctor assigned to a room
+                                    Room room=hospital.getRoomViaDoctor(nameInput);
+
+                                    if (room.roomNumber!=-1)
+                                    {
+                                        Doctor doctor=room.assignedDoctor;
+                                        auto dob=doctor.getDob();
+
+                                        if (int(dob.year())==year &&
+                                            unsigned(dob.month())==static_cast<unsigned>(month) &&
+                                            unsigned(dob.day())==static_cast<unsigned>(day))
+                                        {
+                                            resultStatus=1;
+                                            resultText.setFillColor(textColor);
+
+                                            resultText.setString(
+                                                "DOCTOR FOUND\n\n"
+                                                "Name: "+doctor.getName()+"\n"
+                                                "DOB: "+monthInput+"/"+dayInput+"/"+yearInput+"\n"
+                                                "Age: "+to_string(doctor.getAge().count())+"\n"
+                                                "Skill: "+to_string(doctor.skillLevel())+"/10\n"
+                                                "Shift: "+to_string(doctor.shiftStartTime().count())+
+                                                ":00 - "+to_string(doctor.shiftEndTime().count())+":00"
+                                            );
+                                        }
+                                    }
                                 }
                             }
                         }
+
                         else
                         {
                             selectedBox=0;
@@ -729,6 +769,7 @@ void runVisuals(Hospital &hospital)
             window.draw(nameHeader);
             window.draw(conditionHeader);
             window.draw(doctorHeader);
+            window.draw(doctorDobHeader);
             window.draw(dobHeader);
             window.draw(ageHeader);
 
@@ -743,8 +784,7 @@ void runVisuals(Hospital &hospital)
 
                 float y=185.f+i*54.f;
 
-                //Alternating row colors
-                listRow.setPosition({65.f,y});
+                listRow.setPosition({12.f,y});
 
                 if (i%2==0)
                 {
@@ -759,32 +799,37 @@ void runVisuals(Hospital &hospital)
 
                 //Room number
                 rowText.setString(to_string(roomList[index].roomNumber));
-                rowText.setPosition({75.f,y+12.f});
+                rowText.setPosition({24.f,y+12.f});
                 window.draw(rowText);
 
-                //Patient name
+                //Patient
                 rowText.setString(roomList[index].patientName);
-                rowText.setPosition({155.f,y+12.f});
+                rowText.setPosition({95.f,y+12.f});
                 window.draw(rowText);
 
                 //Condition
                 rowText.setString(to_string(roomList[index].condition)+"/10");
-                rowText.setPosition({350.f,y+12.f});
+                rowText.setPosition({275.f,y+12.f});
                 window.draw(rowText);
 
-                //Doctor name
+                //Doctor
                 rowText.setString(roomList[index].doctorName);
-                rowText.setPosition({470.f,y+12.f});
+                rowText.setPosition({380.f,y+12.f});
+                window.draw(rowText);
+
+                //Doctor DOB
+                rowText.setString(roomList[index].doctorDob);
+                rowText.setPosition({555.f,y+12.f});
                 window.draw(rowText);
 
                 //Patient DOB
                 rowText.setString(roomList[index].dob);
-                rowText.setPosition({680.f,y+12.f});
+                rowText.setPosition({695.f,y+12.f});
                 window.draw(rowText);
 
                 //Patient age
                 rowText.setString(to_string(roomList[index].age));
-                rowText.setPosition({860.f,y+12.f});
+                rowText.setPosition({850.f,y+12.f});
                 window.draw(rowText);
             }
 
@@ -792,6 +837,7 @@ void runVisuals(Hospital &hospital)
             window.draw(listBackButton);
             window.draw(listBackText);
         }
+
         else//Drawing the patient or doctor record page
         {
             if (page==1) 
