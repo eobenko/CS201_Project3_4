@@ -60,7 +60,7 @@ The name of the hospital and the current hour are shown in the main page. There 
 
 ## 2. B-tree: what value of t was chosen, and why?
 
-We chose to have a t value of 2. This results in nodes having a maximum of 4 keys, which results in a very beautiful tree that is easy to work with. We believe that this moderate size is appropriate for the size of our dataset.
+We chose to have a t value of 2. This results in nodes having a maximum of 3 keys, which results in a very beautiful tree that is easy to work with. We believe that this moderate size is appropriate for the size of our dataset.
 
 ## 3. Team contributions
 
